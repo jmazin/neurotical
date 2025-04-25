@@ -36,3 +36,14 @@ body {
 .canvas-container__canvas {
   border: 1px solid black;
 }
+
+/* Info Container */
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.point {
+  font-weight: bold;
+}
