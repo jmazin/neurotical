@@ -41,7 +41,7 @@ let outputLayerSize;
 let network;
 let datasetName = "line";
 let data;
-let learnRate = 0.1;
+let learnRate = 1;
 let stopped = true;
 let requestId;
 let hiddenLayerContent = "";

@@ -45,7 +45,7 @@ function forwardPass(input, network) {
 }
 
 function activation(sum) {
-  return sum;
+  return 1 / (1 + Math.E ** -sum);
 }
 
 function computeOutput(input, network) {
