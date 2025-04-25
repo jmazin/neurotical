@@ -188,3 +188,12 @@ input[type="checkbox"] {
   width: 1rem;
   margin-left: 0;
 }
+
+/* hidden layer */
+
+.learning-controls__hidden-layer-size {
+  width: 0;
+  min-width: 2px;
+  padding: 0 0.5ch;
+  box-sizing: content-box;
+}

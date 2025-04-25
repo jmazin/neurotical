@@ -1,6 +1,6 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network.js";
-import { toNormalized, numClasses } from "./utils.js";
+import { toNormalized, numClasses, setInputWidth } from "./utils.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -29,6 +29,7 @@ const buttons = {
 const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
   learnRate: document.getElementById("learn-rate"),
+  hiddenLayerSize: document.getElementById("layers-hidden"),
 };
 
 // State variables
@@ -43,6 +44,7 @@ let data;
 let learnRate = 0.1;
 let stopped = true;
 let requestId;
+let hiddenLayerContent = "";
 
 // Initialize UI
 populateDatasetSelector();
@@ -60,6 +62,8 @@ function resetUI() {
   inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
   inputs.learnRate.value = learnRate;
   elements.outputLayerSize.textContent = outputLayerSize;
+  inputs.hiddenLayerSize.value = "";
+  setInputWidth(inputs.hiddenLayerSize);
   updateUI();
 }
 
@@ -143,6 +147,25 @@ buttons.reset.addEventListener("click", () => {
 
 inputs.learnRate.addEventListener("input", (e) => {
   learnRate = +e.target.value;
+});
+
+inputs.hiddenLayerSize.addEventListener("input", (e) => {
+  const input = e.target;
+
+  const regex = /^$|^\d+(\s\d+)*\s?$/; // Matches only space-separated numbers
+  if (!regex.test(input.value)) {
+    input.value = hiddenLayerContent;
+    return;
+  }
+
+  setInputWidth(input);
+  hiddenLayerContent = input.value;
+
+  const hidden = input.value.trim().split(/\s+/).map(Number).filter(Boolean);
+  layerSizes = [layerSizes.at(0), ...hidden, layerSizes.at(-1)];
+  network = initNetwork(layerSizes);
+  buildControlsUI(network, onParamChange);
+  updateUI();
 });
 
 function setCoords(e) {

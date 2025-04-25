@@ -22,4 +22,19 @@ function numClasses(data) {
   return data[0].target.length;
 }
 
-export { toNormalized, fromNormalized, argmax, numClasses };
+function setInputWidth(input) {
+  const tempSpan = document.createElement("span");
+  tempSpan.style.visibility = "hidden";
+  tempSpan.style.whiteSpace = "pre";
+  tempSpan.textContent = input.value;
+
+  document.body.appendChild(tempSpan);
+
+  // Update the input width based on the temporary span's width
+  input.style.width = `${input.value.length}ch`;
+
+  // Remove the temporary element after calculation
+  document.body.removeChild(tempSpan);
+}
+
+export { toNormalized, fromNormalized, argmax, numClasses, setInputWidth };
