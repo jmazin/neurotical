@@ -69,18 +69,35 @@ function setParam(network, name, value, index = null) {
 }
 
 function calcMetrics(network, data) {
+  let cost = 0;
   let correct = 0;
 
   for (let i = 0; i < data.length; i++) {
-    const { input, label } = data[i];
+    const { input, target } = data[i];
     const output = computeOutput(input, network);
 
-    if (argmax(output) === label.indexOf(1)) {
+    if (argmax(output) === target.indexOf(1)) {
       correct++;
     }
+
+    cost += outputCost(output, target);
   }
 
-  return { correct };
+  return { correct, cost: cost / data.length };
+}
+
+function outputCost(output, target) {
+  let total = 0;
+
+  for (let i = 0; i < output.length; i++) {
+    total += nodeCost(output[i], target[i]);
+  }
+
+  return total;
+}
+
+function nodeCost(val, expected) {
+  return (val - expected) ** 2;
 }
 
 export { initNetwork, computeOutput, setParam, calcMetrics };

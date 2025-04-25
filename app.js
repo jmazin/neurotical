@@ -14,6 +14,7 @@ const elements = {
   canvas: document.getElementById("canvas"),
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
+  cost: document.getElementById("cost"),
 };
 
 // Inputs
@@ -53,9 +54,10 @@ function updateUI() {
     renderPrediction();
   }
 
-  const { correct } = calcMetrics(network, data);
+  const { correct, cost } = calcMetrics(network, data);
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
+  elements.cost.innerText = cost;
 }
 
 function onParamChange(value, node, weightIndex = null) {

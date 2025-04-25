@@ -1004,8 +1004,8 @@ const poisonPoints = [
   [0.6216371224613244, 0.9288056830597387],
 ];
 
-const safe = safePoints.map((input) => ({ input, label: [1, 0] }));
-const poison = poisonPoints.map((input) => ({ input, label: [0, 1] }));
+const safe = safePoints.map((input) => ({ input, target: [1, 0] }));
+const poison = poisonPoints.map((input) => ({ input, target: [0, 1] }));
 
 const data = [...safe, ...poison];
 

@@ -30,8 +30,8 @@ function draw(network, data, position) {
   drawAxes();
   drawDot([0, 0]);
 
-  data.forEach(({ input, label }) => {
-    drawDot(input, MUSHROOMS[label.indexOf(1)].color);
+  data.forEach(({ input, target }) => {
+    drawDot(input, MUSHROOMS[target.indexOf(1)].color);
   });
 
   if (position.lock) drawDot(position.coords, "purple");
