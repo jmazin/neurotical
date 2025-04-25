@@ -1,4 +1,7 @@
-import { toNormalized, fromNormalized } from "./utils.js";
+import { MUSHROOMS } from "./mushroom-info.js";
+import { computeOutput } from "./network.js";
+import { toNormalized, fromNormalized, argmax } from "./utils.js";
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -12,11 +15,12 @@ function initCanvas(dim) {
   imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
 }
 
-function draw(position) {
+function draw(network, position) {
   for (let i = 0; i < canvasSize; i++) {
     for (let j = 0; j < canvasSize; j++) {
       const coords = toNormalized(i, j, canvasSize);
-      const color = computeColor(coords);
+      const output = computeOutput(coords, network);
+      const color = MUSHROOMS[argmax(output)].predictionColor;
       setPixel(i, j, color);
     }
   }
@@ -27,13 +31,6 @@ function draw(position) {
   drawDot([0, 0]);
 
   if (position.lock) drawDot(position.coords, "purple");
-}
-
-function computeColor([x, y]) {
-  const red = Math.floor(Math.abs(x) * 255);
-  const green = Math.floor(Math.abs(y) * 255);
-  const blue = 100;
-  return [red, green, blue];
 }
 
 function setPixel(i, j, [r, g, b, a = 150]) {

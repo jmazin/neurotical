@@ -1,4 +1,5 @@
 import { initCanvas, draw } from "./canvas.js";
+import { initNetwork } from "./network.js";
 import { toNormalized } from "./utils.js";
 
 // DOM Elements
@@ -11,6 +12,8 @@ const elements = {
 let coords = null;
 let lockPos = false;
 let dim = 500;
+const layerSizes = [2, 2];
+const network = initNetwork(layerSizes);
 
 // Initialize UI
 initCanvas(dim);
@@ -18,7 +21,7 @@ updateUI();
 
 function updateUI() {
   const position = { lock: lockPos, coords };
-  draw(position);
+  draw(network, position);
   updateCoords();
 }
 

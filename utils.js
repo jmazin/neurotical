@@ -14,4 +14,8 @@ function fromNormalized(x, y, dim) {
   return [scaleFrom(x, dim), dim - scaleFrom(y, dim)];
 }
 
-export { toNormalized, fromNormalized };
+function argmax(arr) {
+  return arr.indexOf(Math.max(...arr));
+}
+
+export { toNormalized, fromNormalized, argmax };
