@@ -1,14 +1,23 @@
 // Network functions
-import { initNetwork, computeOutput, calcMetrics } from "../network/network.js";
+import { initNetwork, computeOutput, calcMetrics, backprop } from "../network/network.js";
 
 // UI helpers
 import { buildGrid, drawGrid } from "./ui/grid.js";
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 
+// Utils
+import { formatElapsedTime, setInputWidth } from "../utils.js";
+
 // DOM elements
 const elements = {
   pixelGrid: document.getElementById("pixel-grid"),
   testAccuracy: document.getElementById("test-accuracy"),
+  accuracy: document.getElementById("accuracy"),
+  cost: document.getElementById("cost"),
+  batch: document.getElementById("batch"),
+  epoch: document.getElementById("epoch"),
+  stepTime: document.getElementById("step-time"),
+  learningControls: document.getElementById("learning-controls"),
 };
 
 // Buttons
@@ -16,6 +25,10 @@ const buttons = {
   next: document.getElementById("next"),
   prev: document.getElementById("prev"),
   clear: document.getElementById("clear"),
+  load: document.getElementById("load"),
+  learn: document.getElementById("learn"),
+  step: document.getElementById("step"),
+  reset: document.getElementById("reset"),
 };
 
 // Constants & State
@@ -25,6 +38,20 @@ let testNum = 0;
 let label = null;
 let input = Array(PIXEL_COUNT).fill(0);
 let layerSizes, network;
+let learnRate;
+let stopped = true,
+  singleBatch = false;
+let elapsed, requestId;
+let batches,
+  trainingSet,
+  batchNum = 0;
+
+// Inputs
+const inputs = {
+  rate: document.getElementById("rate"),
+  hiddenLayers: document.getElementById("layers-hidden"),
+  singleBatch: document.getElementById("single-batch"),
+};
 
 // Initialize
 await loadTestSet();
@@ -46,6 +73,10 @@ function initializeUI() {
   network = initNetwork(layerSizes);
   refreshPrediction();
   updateTestsetAccuracy();
+  learnRate = 1;
+  inputs.rate.value = learnRate;
+  inputs.hiddenLayers.value = layerSizes.slice(1, -1).join(" ");
+  setInputWidth(inputs.hiddenLayers);
 }
 
 // Attach event listeners
@@ -92,8 +123,99 @@ function refreshPrediction() {
   updatePredictionUI(output, label);
 }
 
+// Event listeners -- learning controls
+buttons.load.addEventListener("click", async () => {
+  buttons.load.disabled = true;
+  buttons.load.textContent = "loading...";
+
+  try {
+    const file = await fetch("https://storage.googleapis.com/neurotical-mnist/batches-small.json");
+    batches = await file.json();
+    trainingSet = batches[batchNum];
+    elements.learningControls.classList.remove("learning-controls--not-loaded");
+    updateOutputUI();
+    buttons.load.textContent = "loaded";
+  } finally {
+    buttons.load.disabled = true;
+    buttons.load.remove();
+  }
+});
+
+buttons.step.addEventListener("click", () => {
+  backprop(network, trainingSet, learnRate);
+  updateOutputUI();
+});
+
+buttons.learn.addEventListener("click", () => {
+  console.log(network);
+  if (stopped) {
+    animate();
+    buttons.step.disabled = true;
+    buttons.learn.textContent = "stop";
+  } else {
+    cancelAnimationFrame(requestId);
+    buttons.step.disabled = false;
+    buttons.learn.textContent = "learn";
+    elements.stepTime.textContent = "--";
+  }
+  stopped = !stopped;
+});
+
+buttons.reset.addEventListener("click", () => {
+  network = initNetwork(layerSizes);
+  batchNum = 0;
+  updateOutputUI();
+});
+
+inputs.hiddenLayers.addEventListener("input", (e) => {
+  const input = e.target;
+  setInputWidth(input);
+
+  const hidden = e.target.value.split(/\s+/).map(Number).filter(Boolean);
+  layerSizes = [layerSizes[0], ...hidden, layerSizes.at(-1)];
+
+  network = initNetwork(layerSizes);
+  batchNum = 0;
+  updateOutputUI();
+});
+
+inputs.singleBatch.addEventListener("change", (e) => {
+  singleBatch = e.target.checked;
+});
+
+inputs.rate.addEventListener("input", (e) => {
+  learnRate = +e.target.value;
+  updateOutputUI();
+});
+
 function updateTestsetAccuracy() {
   const { correct } = calcMetrics(network, testSet);
   const percent = ((correct / testSet.length) * 100).toFixed(0);
   elements.testAccuracy.innerText = `${correct}/${testSet.length} = ${percent}%`;
+}
+
+function updateOutputUI() {
+  updateLearningUI();
+  refreshPrediction();
+  updateTestsetAccuracy();
+}
+
+function updateLearningUI() {
+  const { correct, cost } = calcMetrics(network, trainingSet);
+  const percent = ((correct / trainingSet.length) * 100).toFixed(2);
+  elements.accuracy.innerText = `${correct}/${trainingSet.length} = ${percent}%`;
+  elements.cost.innerText = cost.toFixed(6);
+  elements.batch.textContent = `${(batchNum % batches.length) + 1}/${batches.length}`;
+  elements.epoch.textContent = Math.floor(batchNum / batches.length);
+}
+
+function animate() {
+  const start = performance.now();
+  batchNum += !singleBatch;
+  trainingSet = batches[batchNum % batches.length];
+  backprop(network, trainingSet, learnRate);
+  elapsed = performance.now() - start;
+  updateOutputUI();
+  elements.stepTime.textContent = formatElapsedTime(elapsed);
+  requestId = requestAnimationFrame(animate);
 }

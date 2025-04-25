@@ -45,6 +45,33 @@
             <h3>Predictions</h3>
             <div id="prediction" class="prediction"></div>
           </section>
+          <section class="learning-controls">
+            <h3>Learning controls</h3>
+            <button id="load">load training data</button>
+            <div id="learning-controls" class="learning-controls__controls learning-controls--not-loaded">
+              <div>acc: <span id="accuracy"></span></div>
+              <div class="metrics__cost">cost: <span id="cost"></span></div>
+              <div class="button-group">
+                <div>epoch: <span id="epoch"></span></div>
+                <div>batch: <span id="batch"></span></div>
+              </div>
+              <div class="button-group">
+                <button id="learn">learn</button>
+                <button id="step">step</button>
+              </div>
+              <label>
+                <input type="checkbox" id="single-batch" />
+                <span>single batch</span>
+              </label>
+              <button id="reset">reset network</button>
+              <label>learn rate:<input type="number" id="rate" min="0" step="0.1" /> </label>
+              <label
+                >layer sizes:<span>784</span
+                ><input type="text" id="layers-hidden" class="learning-controls__hidden-layer-size" /><span>10</span>
+              </label>
+              <span class="timings__step-time">step time: <span id="step-time">--</span></span>
+            </div>
+          </section>
         </div>
       </main>
     </div>
