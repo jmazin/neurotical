@@ -1,6 +1,6 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics, backprop, finiteDiff } from "./network/network.js";
-import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "./utils.js";
+import { initNetwork, computeOutput, setParam, calcMetrics, backprop, finiteDiff } from "../network/network.js";
+import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "../utils.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -65,6 +65,7 @@ let learn = backprop;
 // Initialize UI
 populateDatasetSelector();
 resetUI();
+showDemo();
 
 function resetUI() {
   data = datasets[datasetName].data;
@@ -259,4 +260,8 @@ function handleResolutionChange(direction) {
 
   initCanvas(dim);
   updateUI();
+}
+
+function showDemo() {
+  document.body.classList.remove("is-loading");
 }

@@ -41,6 +41,18 @@ body {
   border-bottom: 3px solid gray;
   margin: 0 -30px;
   padding: 0 30px;
+  display: flex;
+  align-items: center;
+}
+
+.nav {
+  flex: 1;
+
+  ul {
+    display: flex;
+    justify-content: flex-end;
+    list-style-type: none;
+  }
 }
 /* Page */
 
@@ -51,6 +63,18 @@ body {
 .page__main {
   display: flex;
   flex-direction: column;
+
+  .is-loading & {
+    display: none;
+  }
+}
+
+.page__loading-text {
+  display: none;
+
+  .is-loading & {
+    display: block;
+  }
 }
 
 .page__container {

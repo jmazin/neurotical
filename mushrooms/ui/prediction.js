@@ -1,5 +1,5 @@
 import { MUSHROOMS } from "../mushroom-info.js";
-import { numClasses } from "../utils.js";
+import { numClasses } from "../../utils.js";
 
 const container = document.getElementById("prediction");
 

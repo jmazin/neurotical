@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="../style.css" />
     <script src="./app.js" type="module"></script>
   </head>
   <body class="is-loading">
@@ -18,9 +18,15 @@
       <div class="header__title">
         <h1 class="header__heading">Neurotical</h1>
       </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="../mnist">Digit Classifier</a></li>
+        </ul>
+      </nav>
     </header>
     <div class="page">
       <h2 class="page__title">AI Mycologist</h2>
+      <div class="page__loading-text">Loading...</div>
       <main class="page__main">
         <div class="metrics">
           <div id="accuracy"></div>
