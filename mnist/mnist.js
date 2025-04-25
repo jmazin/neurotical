@@ -8,6 +8,9 @@ import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 // Utils
 import { formatElapsedTime, setInputWidth } from "../utils.js";
 
+// Trained network
+import trainedNetwork from "./trained-network.js";
+
 // DOM elements
 const elements = {
   pixelGrid: document.getElementById("pixel-grid"),
@@ -69,8 +72,8 @@ function initializeUI() {
   buildGrid(PIXEL_COUNT);
   attachEventListeners();
   buildPredictionUI();
-  layerSizes = [PIXEL_COUNT, 100, 10];
-  network = initNetwork(layerSizes);
+  layerSizes = [PIXEL_COUNT, trainedNetwork[1].length, 10];
+  network = trainedNetwork;
   refreshPrediction();
   updateTestsetAccuracy();
   learnRate = 1;
