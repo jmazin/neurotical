@@ -1,0 +1,21 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: snow;
+  font-family: "Inter", sans-serif;
+  margin: 0px 30px;
+}
+
+.header {
+  border-bottom: 3px solid gray;
+  margin: 0 -30px;
+  padding: 0 30px;
+}
+
+.canvas-container__canvas {
+  border: 1px solid black;
+}
