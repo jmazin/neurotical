@@ -11,7 +11,6 @@ import { buildControlsUI, syncControls } from "./ui/network-controls.js";
 
 // Canvas sizes
 const CANVAS_SIZES = [100, 300, 500];
-const CANVAS_CSS_WIDTH = 500;
 
 // DOM Elements
 const elements = {
@@ -199,7 +198,7 @@ inputs.trainingMethod.addEventListener("change", (e) => {
 });
 
 function setCoords(e) {
-  coords = toNormalized(e.offsetX, e.offsetY, CANVAS_CSS_WIDTH);
+  coords = toNormalized(e.offsetX, e.offsetY, elements.canvas.clientWidth);
 }
 
 function updateCoords() {

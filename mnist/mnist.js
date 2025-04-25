@@ -48,6 +48,7 @@ let elapsed, requestId;
 let batches,
   trainingSet,
   batchNum = 0;
+let lastPixel;
 
 // Inputs
 const inputs = {
@@ -192,14 +193,31 @@ inputs.rate.addEventListener("input", (e) => {
 });
 
 // Event listeners -- Grid
-elements.pixelGrid.addEventListener("mouseover", (e) => {
-  if (e.target === e.currentTarget || !e.buttons) return;
+elements.pixelGrid.addEventListener(
+  "pointermove",
+  (e) => {
+    let target;
 
-  const index = +e.target.id.split("-")[1];
-  updateInput(index);
-  label = null;
-  updateGridUI();
-});
+    if (e.pointerType === "touch") {
+      e.preventDefault();
+      const touch = e.touches ? e.touches[0] : e;
+      target = document.elementFromPoint(touch.clientX, touch.clientY);
+    } else {
+      if (e.target === e.currentTarget || !e.buttons) return;
+      target = e.target;
+    }
+
+    const index = +target.id.split("-")[1];
+
+    if (index !== lastPixel) {
+      lastPixel = index;
+      updateInput(index);
+      label = null;
+      updateGridUI();
+    }
+  },
+  { passive: false }
+);
 
 function updateTestsetAccuracy() {
   const { correct } = calcMetrics(network, testSet);

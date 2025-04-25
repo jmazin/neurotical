@@ -16,6 +16,7 @@ label:has([disabled]),
   flex-direction: column;
   gap: 0.4rem;
   width: 300px;
+  flex-shrink: 0;
 }
 
 .grid-container__grid {
@@ -91,10 +92,19 @@ label:has([disabled]),
 
 /* Mobile  */
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 768px) {
   .page__container {
     max-width: 400px;
     gap: 1rem;
+  }
+
+  .grid-container {
+    order: -1;
+    align-self: center;
+  }
+
+  .learning-controls {
+    order: 0;
   }
 
   .grid-container__grid {

@@ -270,3 +270,21 @@ input[type="checkbox"] {
   padding: 0 0.5ch;
   box-sizing: content-box;
 }
+
+/* Mobile */
+
+@media screen and (max-width: 768px) {
+  .page__container {
+    flex-direction: column;
+  }
+
+  .learning-controls {
+    order: -1;
+  }
+
+  .canvas-container__canvas,
+  .canvas-container__controls {
+    max-width: 500px;
+    width: 100%;
+  }
+}
