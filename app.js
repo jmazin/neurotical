@@ -9,6 +9,10 @@ import * as datasets from "./training-data/index.js";
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 import { buildControlsUI, syncControls } from "./ui/network-controls.js";
 
+// Canvas sizes
+const CANVAS_SIZES = [100, 300, 500];
+const CANVAS_CSS_WIDTH = 500;
+
 // DOM Elements
 const elements = {
   canvas: document.getElementById("canvas"),
@@ -18,6 +22,7 @@ const elements = {
   outputLayerSize: document.getElementById("layers-output"),
   fps: document.getElementById("fps"),
   stepTime: document.getElementById("step-time"),
+  currentResolution: document.getElementById("current-resolution"),
 };
 
 // Buttons
@@ -25,6 +30,8 @@ const buttons = {
   learn: document.getElementById("learn"),
   step: document.getElementById("step"),
   reset: document.getElementById("reset"),
+  resPlus: document.getElementById("resolution__plus"),
+  resMinus: document.getElementById("resolution__minus"),
 };
 
 // Inputs
@@ -38,7 +45,7 @@ const inputs = {
 // State variables
 let coords = null;
 let lockPos = false;
-let dim = 500;
+let dim = CANVAS_SIZES.at(-1);
 let layerSizes;
 let outputLayerSize;
 let network;
@@ -71,6 +78,7 @@ function resetUI() {
   elements.outputLayerSize.textContent = outputLayerSize;
   inputs.hiddenLayerSize.value = "";
   setInputWidth(inputs.hiddenLayerSize);
+  elements.currentResolution.textContent = `${dim}px`;
   updateUI();
 }
 
@@ -182,7 +190,7 @@ inputs.blended.addEventListener("change", (e) => {
 });
 
 function setCoords(e) {
-  coords = toNormalized(e.offsetX, e.offsetY, dim);
+  coords = toNormalized(e.offsetX, e.offsetY, CANVAS_CSS_WIDTH);
 }
 
 function updateCoords() {
@@ -192,6 +200,10 @@ function updateCoords() {
     point.textContent = `x: --, y: --`;
   }
 }
+
+buttons.resPlus.addEventListener("click", () => handleResolutionChange(1));
+
+buttons.resMinus.addEventListener("click", () => handleResolutionChange(-1));
 
 function renderPrediction() {
   const output = computeOutput(coords, network);
@@ -224,4 +236,19 @@ function animate() {
   }
 
   requestId = requestAnimationFrame(animate);
+}
+
+// Resolution change
+function handleResolutionChange(direction) {
+  const currentIndex = CANVAS_SIZES.indexOf(dim);
+  const newIndex = currentIndex + direction;
+
+  dim = CANVAS_SIZES[newIndex];
+
+  buttons.resMinus.disabled = newIndex === 0;
+  buttons.resPlus.disabled = newIndex === CANVAS_SIZES.length - 1;
+  elements.currentResolution.textContent = `${dim}px`;
+
+  initCanvas(dim);
+  updateUI();
 }

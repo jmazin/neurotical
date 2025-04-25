@@ -29,10 +29,20 @@
         <section class="page__container">
           <div class="canvas-container">
             <canvas id="canvas" class="canvas-container__canvas"></canvas>
-            <label>
-              <input type="checkbox" id="blended" />
-              <span>blended</span>
-            </label>
+            <div class="canvas-container__controls">
+              <div class="resolution">
+                <div>resolution:</div>
+                <div class="resolution__buttons">
+                  <button id="resolution__minus">-</button>
+                  <button id="resolution__plus" disabled>+</button>
+                </div>
+                <div id="current-resolution"></div>
+              </div>
+              <label>
+                <input type="checkbox" id="blended" />
+                <span>blended</span>
+              </label>
+            </div>
             <div class="timings">
               <span class="timings__fps">fps: <span id="fps">--</span></span>
               <span class="timings__step-time">step time: <span id="step-time">--</span></span>

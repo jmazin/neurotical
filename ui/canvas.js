@@ -65,7 +65,7 @@ function drawDot([x, y], color = "black") {
   const [i, j] = fromNormalized(x, y, canvasSize);
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(i, j, 5, 0, 2 * Math.PI);
+  ctx.arc(i, j, canvasSize / 100, 0, 2 * Math.PI);
   ctx.fill();
 }
 

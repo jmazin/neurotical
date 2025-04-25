@@ -67,8 +67,13 @@ body {
 }
 
 .canvas-container__canvas {
-  max-width: max-content;
   border: 1px solid black;
+  width: 500px;
+}
+
+.canvas-container__controls {
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Info Container */
@@ -107,6 +112,35 @@ body {
 .prediction__mushroom {
   display: flex;
   justify-content: space-between;
+}
+
+/* resolution */
+
+.resolution {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.resolution__controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.resolution__buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+
+  button {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3rem;
+  }
 }
 
 /* Timings */
