@@ -1,10 +1,11 @@
+import { toNormalized, fromNormalized } from "./utils.js";
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let canvasSize, halfSize, imageData;
 
-function initCanvas() {
-  canvasSize = 500;
+function initCanvas(dim) {
+  canvasSize = dim;
   halfSize = canvasSize / 2;
   canvas.width = canvasSize;
   canvas.height = canvasSize;
@@ -14,7 +15,7 @@ function initCanvas() {
 function draw(position) {
   for (let i = 0; i < canvasSize; i++) {
     for (let j = 0; j < canvasSize; j++) {
-      const coords = [i - halfSize, halfSize - j];
+      const coords = toNormalized(i, j, canvasSize);
       const color = computeColor(coords);
       setPixel(i, j, color);
     }
@@ -29,8 +30,8 @@ function draw(position) {
 }
 
 function computeColor([x, y]) {
-  const red = Math.floor((Math.abs(x * 2) * 255) / (canvasSize - 1));
-  const green = Math.floor((Math.abs(y * 2) * 255) / (canvasSize - 1));
+  const red = Math.floor(Math.abs(x) * 255);
+  const green = Math.floor(Math.abs(y) * 255);
   const blue = 100;
   return [red, green, blue];
 }
@@ -58,11 +59,10 @@ function drawAxes() {
 }
 
 function drawDot([x, y], color = "black") {
-  const canvasX = x + halfSize;
-  const canvasY = halfSize - y;
+  const [i, j] = fromNormalized(x, y, canvasSize);
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
+  ctx.arc(i, j, 5, 0, 2 * Math.PI);
   ctx.fill();
 }
 

@@ -1,4 +1,5 @@
 import { initCanvas, draw } from "./canvas.js";
+import { toNormalized } from "./utils.js";
 
 // DOM Elements
 const elements = {
@@ -9,9 +10,10 @@ const elements = {
 // State variables
 let coords = null;
 let lockPos = false;
+let dim = 500;
 
 // Initialize UI
-initCanvas();
+initCanvas(dim);
 updateUI();
 
 function updateUI() {
@@ -46,14 +48,12 @@ elements.canvas.addEventListener("dblclick", () => {
 });
 
 function setCoords(e) {
-  const cx = e.offsetX - canvas.width / 2;
-  const cy = canvas.height / 2 - e.offsetY;
-  coords = [cx, cy];
+  coords = toNormalized(e.offsetX, e.offsetY, dim);
 }
 
 function updateCoords() {
   if (coords) {
-    point.textContent = `x: ${coords[0]}, y: ${coords[1]}`;
+    point.textContent = `x: ${coords[0].toFixed(3)}, y: ${coords[1].toFixed(3)}`;
   } else {
     point.textContent = `x: --, y: --`;
   }
