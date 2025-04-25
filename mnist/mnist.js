@@ -8,7 +8,6 @@ import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 // DOM elements
 const elements = {
   pixelGrid: document.getElementById("pixel-grid"),
-  label: document.getElementById("label"),
 };
 
 // Buttons
@@ -82,7 +81,6 @@ function clearGrid() {
 
 // Update the grid UI
 function updateGridUI() {
-  elements.label.textContent = label;
   drawGrid(input);
   refreshPrediction();
 }

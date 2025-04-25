@@ -20,7 +20,7 @@ function buildPredictionUI() {
   }
 }
 
-function updatePredictionUI(output) {
+function updatePredictionUI(output, label = null) {
   const sortedIndices = [...output]
     .map((val, index) => ({ val, index }))
     .sort((a, b) => b.val - a.val)
@@ -29,6 +29,7 @@ function updatePredictionUI(output) {
   output.forEach((val, i) => {
     const classEl = document.getElementById(`digit-class-${i}`);
     classEl.classList.toggle("first", i === sortedIndices[0]);
+    classEl.classList.toggle("label", i === label);
     classEl.style.order = sortedIndices.indexOf(i);
     classEl.querySelector(".prediction-val").textContent = val.toFixed(3);
   });
