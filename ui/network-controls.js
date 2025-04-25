@@ -65,7 +65,6 @@ function createRangeInput(node, weightIndex) {
 
   const controlName = `${node.name}-${weightIndex ?? "bias"}`;
   input.id = `input-${controlName}`;
-  input.value = node.weights[weightIndex] ?? node.bias;
 
   return input;
 }
@@ -76,9 +75,26 @@ function createDisplay(node, weightIndex) {
 
   const controlName = `${node.name}-${weightIndex ?? "bias"}`;
   display.id = `value-${controlName}`;
-  display.innerText = (node.weights[weightIndex] ?? node.bias).toFixed(5);
 
   return display;
 }
 
-export { buildControlsUI };
+function syncControls(network) {
+  network.forEach((layer) => {
+    layer.forEach((node) => {
+      node.weights.forEach((weight, weightIndex) => {
+        updateControl(node.name, weight, weightIndex);
+      });
+
+      updateControl(node.name, node.bias);
+    });
+  });
+}
+
+function updateControl(nodeName, value, index = "bias") {
+  const input = document.getElementById(`input-${nodeName}-${index}`);
+  const display = document.getElementById(`value-${nodeName}-${index}`);
+  input.value = display.textContent = value.toFixed(5);
+}
+
+export { buildControlsUI, syncControls };

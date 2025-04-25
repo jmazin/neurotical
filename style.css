@@ -21,6 +21,10 @@ input {
   font-size: 1rem;
 }
 
+button {
+  font-size: 1rem;
+}
+
 body {
   background-color: snow;
   font-family: "Inter", sans-serif;
@@ -45,7 +49,7 @@ body {
 
 .page__container {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 /* Canvas container */
@@ -98,6 +102,11 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
+}
+
+.step,
+.reset {
+  width: 60px;
 }
 
 /* Network Controls */

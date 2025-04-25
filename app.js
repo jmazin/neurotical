@@ -1,5 +1,5 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics } from "./network.js";
+import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network.js";
 import { toNormalized } from "./utils.js";
 
 // Datasets
@@ -7,7 +7,7 @@ import * as datasets from "./training-data/index.js";
 
 // UI helpers
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
-import { buildControlsUI } from "./ui/network-controls.js";
+import { buildControlsUI, syncControls } from "./ui/network-controls.js";
 
 // DOM Elements
 const elements = {
@@ -15,6 +15,8 @@ const elements = {
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
+  step: document.getElementById("step"),
+  reset: document.getElementById("reset"),
 };
 
 // Inputs
@@ -58,6 +60,7 @@ function updateUI() {
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
   elements.cost.innerText = cost;
+  syncControls(network.slice(1));
 }
 
 function onParamChange(value, node, weightIndex = null) {
@@ -97,6 +100,16 @@ elements.canvas.addEventListener("dblclick", () => {
 inputs.datasetSelector.addEventListener("change", (e) => {
   datasetName = e.target.value;
   resetUI();
+});
+
+elements.step.addEventListener("click", () => {
+  learn(network, data, 0.1);
+  updateUI();
+});
+
+elements.reset.addEventListener("click", () => {
+  network = initNetwork(layerSizes);
+  updateUI();
 });
 
 function setCoords(e) {
