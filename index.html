@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="./style.css" />
     <script src="./app.js" type="module"></script>
   </head>
-  <body>
+  <body class="is-loading">
     <header class="header">
       <div class="header__title">
         <h1 class="header__heading">Neurotical</h1>
@@ -22,9 +22,11 @@
     <div class="page">
       <h2 class="page__title">AI Mycologist</h2>
       <main class="page__main">
-        <div class="canvas-container">
-          <canvas id="canvas" class="canvas-container__canvas"></canvas>
-        </div>
+        <section class="page__container">
+          <div class="canvas-container">
+            <canvas id="canvas" class="canvas-container__canvas"></canvas>
+          </div>
+        </section>
       </main>
     </div>
   </body>

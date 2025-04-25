@@ -15,6 +15,23 @@ body {
   margin: 0 -30px;
   padding: 0 30px;
 }
+/* Page */
+
+.page {
+  margin-bottom: 2rem;
+}
+
+.page__main {
+  display: flex;
+  flex-direction: column;
+}
+
+.page__container {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Canvas container */
 
 .canvas-container__canvas {
   border: 1px solid black;

@@ -2,4 +2,8 @@ import { initCanvas, draw } from "./canvas.js";
 
 // Initialize UI
 initCanvas();
-draw();
+updateUI();
+
+function updateUI() {
+  draw();
+}
