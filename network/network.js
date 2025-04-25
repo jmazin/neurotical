@@ -37,6 +37,7 @@ function forwardPass(input, network) {
         sum += prevLayer[i].act * node.weights[i];
       }
 
+      node.sum = sum;
       node.act = activation(sum);
     }
   }
@@ -102,5 +103,14 @@ function nodeCost(val, expected) {
   return (val - expected) ** 2;
 }
 
-export { initNetwork, computeOutput, setParam, calcMetrics };
-export { learn } from "./finite-diff.js";
+function activationDeriv(sum) {
+  const act = activation(sum);
+  return act * (1 - act);
+}
+
+function costDeriv(val, expected) {
+  return 2 * (val - expected);
+}
+
+export { initNetwork, computeOutput, setParam, calcMetrics, forwardPass, activationDeriv, costDeriv };
+export { learn } from "./backprop.js";
