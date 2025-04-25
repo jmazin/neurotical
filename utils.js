@@ -18,4 +18,8 @@ function argmax(arr) {
   return arr.indexOf(Math.max(...arr));
 }
 
-export { toNormalized, fromNormalized, argmax };
+function numClasses(data) {
+  return data[0].target.length;
+}
+
+export { toNormalized, fromNormalized, argmax, numClasses };

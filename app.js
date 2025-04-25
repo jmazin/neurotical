@@ -1,6 +1,6 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network.js";
-import { toNormalized } from "./utils.js";
+import { toNormalized, numClasses } from "./utils.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -15,6 +15,7 @@ const elements = {
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
+  outputLayerSize: document.getElementById("layers-output"),
 };
 
 // Buttons
@@ -34,7 +35,8 @@ const inputs = {
 let coords = null;
 let lockPos = false;
 let dim = 500;
-const layerSizes = [2, 2];
+let layerSizes;
+let outputLayerSize;
 let network;
 let datasetName = "line";
 let data;
@@ -48,12 +50,16 @@ resetUI();
 
 function resetUI() {
   data = datasets[datasetName].data;
+  layerSizes = [2, null];
+  outputLayerSize = numClasses(data);
+  layerSizes[layerSizes.length - 1] = outputLayerSize;
   network = initNetwork(layerSizes);
   initCanvas(dim);
-  buildPredictionUI();
+  buildPredictionUI(data);
   buildControlsUI(network, onParamChange);
   inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
   inputs.learnRate.value = learnRate;
+  elements.outputLayerSize.textContent = outputLayerSize;
   updateUI();
 }
 
