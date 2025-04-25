@@ -113,4 +113,5 @@ function costDeriv(val, expected) {
 }
 
 export { initNetwork, computeOutput, setParam, calcMetrics, forwardPass, activationDeriv, costDeriv };
-export { learn } from "./backprop.js";
+export { learn as backprop } from "./backprop.js";
+export { learn as finiteDiff } from "./finite-diff.js";

@@ -1,5 +1,5 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network/network.js";
+import { initNetwork, computeOutput, setParam, calcMetrics, backprop, finiteDiff } from "./network/network.js";
 import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "./utils.js";
 
 // Datasets
@@ -40,6 +40,7 @@ const inputs = {
   learnRate: document.getElementById("learn-rate"),
   hiddenLayerSize: document.getElementById("layers-hidden"),
   blended: document.getElementById("blended"),
+  trainingMethod: document.getElementById("training-method"),
 };
 
 // State variables
@@ -59,6 +60,7 @@ let blended = false;
 let fpsUpdate = 0;
 let lastFrame;
 let elapsed;
+let learn = backprop;
 
 // Initialize UI
 populateDatasetSelector();
@@ -79,6 +81,7 @@ function resetUI() {
   inputs.hiddenLayerSize.value = "";
   setInputWidth(inputs.hiddenLayerSize);
   elements.currentResolution.textContent = `${dim}px`;
+  inputs.trainingMethod.selectedIndex = 1;
   updateUI();
 }
 
@@ -187,6 +190,11 @@ inputs.hiddenLayerSize.addEventListener("input", (e) => {
 inputs.blended.addEventListener("change", (e) => {
   blended = e.target.checked;
   updateUI();
+});
+
+inputs.trainingMethod.addEventListener("change", (e) => {
+  const val = e.target.value;
+  learn = val === "finite" ? finiteDiff : backprop;
 });
 
 function setCoords(e) {
