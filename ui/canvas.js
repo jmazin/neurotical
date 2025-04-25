@@ -1,6 +1,6 @@
-import { MUSHROOMS } from "./mushroom-info.js";
-import { computeOutput } from "./network.js";
-import { toNormalized, fromNormalized, argmax } from "./utils.js";
+import { MUSHROOMS } from "../mushroom-info.js";
+import { computeOutput } from "../network.js";
+import { toNormalized, fromNormalized, argmax } from "../utils.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");

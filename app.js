@@ -1,6 +1,9 @@
-import { initCanvas, draw } from "./canvas.js";
-import { initNetwork } from "./network.js";
+import { initCanvas, draw } from "./ui/canvas.js";
+import { initNetwork, computeOutput } from "./network.js";
 import { toNormalized } from "./utils.js";
+
+// UI helpers
+import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 
 // DOM Elements
 const elements = {
@@ -17,6 +20,7 @@ const network = initNetwork(layerSizes);
 
 // Initialize UI
 initCanvas(dim);
+buildPredictionUI();
 updateUI();
 
 function updateUI() {
@@ -36,6 +40,9 @@ elements.canvas.addEventListener("mouseout", () => {
   if (lockPos) return;
   coords = null;
   updateCoords();
+  document.querySelectorAll(".prediction__value").forEach((div) => {
+    div.textContent = "";
+  });
 });
 
 elements.canvas.addEventListener("click", (e) => {
@@ -56,8 +63,14 @@ function setCoords(e) {
 
 function updateCoords() {
   if (coords) {
-    point.textContent = `x: ${coords[0].toFixed(3)}, y: ${coords[1].toFixed(3)}`;
+    renderPrediction();
   } else {
     point.textContent = `x: --, y: --`;
   }
+}
+
+function renderPrediction() {
+  const output = computeOutput(coords, network);
+  point.textContent = `x: ${coords[0].toFixed(3)}, y: ${coords[1].toFixed(3)}`;
+  updatePredictionUI(output);
 }
