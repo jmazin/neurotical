@@ -55,6 +55,12 @@ body {
   gap: 2rem;
 }
 
+/* Metrics */
+
+.metrics__cost {
+  font-weight: bold;
+}
+
 /* Prediction */
 
 .prediction-section {

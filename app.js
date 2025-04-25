@@ -1,6 +1,7 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam } from "./network.js";
 import { toNormalized } from "./utils.js";
+import { data } from "./training.js";
 
 // UI helpers
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
@@ -27,7 +28,7 @@ updateUI();
 
 function updateUI() {
   const position = { lock: lockPos, coords };
-  draw(network, position);
+  draw(network, data, position);
   updateCoords();
 
   if (coords) {

@@ -15,7 +15,7 @@ function initCanvas(dim) {
   imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
 }
 
-function draw(network, position) {
+function draw(network, data, position) {
   for (let i = 0; i < canvasSize; i++) {
     for (let j = 0; j < canvasSize; j++) {
       const coords = toNormalized(i, j, canvasSize);
@@ -29,6 +29,10 @@ function draw(network, position) {
 
   drawAxes();
   drawDot([0, 0]);
+
+  data.forEach(({ input, label }) => {
+    drawDot(input, MUSHROOMS[label.indexOf(1)].color);
+  });
 
   if (position.lock) drawDot(position.coords, "purple");
 }
