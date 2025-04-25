@@ -37,4 +37,18 @@ function setInputWidth(input) {
   document.body.removeChild(tempSpan);
 }
 
-export { toNormalized, fromNormalized, argmax, numClasses, setInputWidth };
+function formatElapsedTime(time) {
+  let elapsed = Math.round(time);
+  let units = "ms";
+
+  if (time < 10) {
+    elapsed = time.toFixed(1);
+  } else if (time >= 1000) {
+    elapsed = (time / 1000).toFixed(2);
+    units = "s";
+  }
+
+  return `${elapsed}${units}`;
+}
+
+export { toNormalized, fromNormalized, argmax, numClasses, setInputWidth, formatElapsedTime };

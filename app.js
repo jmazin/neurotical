@@ -1,6 +1,6 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network.js";
-import { toNormalized, numClasses, setInputWidth } from "./utils.js";
+import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "./utils.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -16,6 +16,8 @@ const elements = {
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
   outputLayerSize: document.getElementById("layers-output"),
+  fps: document.getElementById("fps"),
+  stepTime: document.getElementById("step-time"),
 };
 
 // Buttons
@@ -47,6 +49,9 @@ let stopped = true;
 let requestId;
 let hiddenLayerContent = "";
 let blended = false;
+let fpsUpdate = 0;
+let lastFrame;
+let elapsed;
 
 // Initialize UI
 populateDatasetSelector();
@@ -138,6 +143,7 @@ buttons.learn.addEventListener("click", () => {
     cancelAnimationFrame(requestId);
     buttons.step.disabled = false;
     buttons.learn.textContent = "learn";
+    elements.fps.textContent = elements.stepTime.textContent = "--";
   }
   stopped = !stopped;
 });
@@ -204,7 +210,18 @@ function populateDatasetSelector() {
 
 // Animation
 function animate() {
+  const start = performance.now();
+  const frameTime = (start - lastFrame) / 1000 || null;
+  lastFrame = start;
   learn(network, data, learnRate);
+  elapsed = performance.now() - start;
   updateUI();
+
+  if (start - fpsUpdate > 500) {
+    fpsUpdate = start;
+    elements.fps.textContent = frameTime ? (1 / frameTime).toFixed(0) : "--";
+    elements.stepTime.textContent = formatElapsedTime(elapsed);
+  }
+
   requestId = requestAnimationFrame(animate);
 }
