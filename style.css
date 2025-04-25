@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+h3 {
+  margin: 0;
+}
+
+section {
+  h3 {
+    margin-bottom: 0.5rem;
+  }
+}
+
 body {
   background-color: snow;
   font-family: "Inter", sans-serif;
@@ -42,10 +52,20 @@ body {
 .info-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 /* Prediction */
+
+.prediction-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.prediction-section__point {
+  font-weight: bold;
+}
 
 .prediction {
   display: flex;
@@ -58,6 +78,54 @@ body {
   justify-content: space-between;
 }
 
-.point {
-  font-weight: bold;
+/* Network Controls */
+
+.network-controls__network {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 0.3rem;
+}
+
+.layer {
+  border: 2px solid palevioletred;
+  width: 275px;
+  border-radius: 4px;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 0.3rem;
+}
+
+.node {
+  border: 2px solid slategray;
+  border-radius: 4px;
+}
+
+.control {
+  display: flex;
+  height: 1.6rem;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.control__input {
+  flex: 1;
+}
+
+.control__value {
+  width: 85px;
+}
+
+.weight {
+  color: black;
+}
+
+.bias {
+  color: dimgray;
+}
+
+.output {
+  border-width: 3px;
 }

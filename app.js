@@ -1,9 +1,10 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput } from "./network.js";
+import { initNetwork, computeOutput, setParam } from "./network.js";
 import { toNormalized } from "./utils.js";
 
 // UI helpers
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
+import { buildControlsUI } from "./ui/network-controls.js";
 
 // DOM Elements
 const elements = {
@@ -21,12 +22,22 @@ const network = initNetwork(layerSizes);
 // Initialize UI
 initCanvas(dim);
 buildPredictionUI();
+buildControlsUI(network, onParamChange);
 updateUI();
 
 function updateUI() {
   const position = { lock: lockPos, coords };
   draw(network, position);
   updateCoords();
+
+  if (coords) {
+    renderPrediction();
+  }
+}
+
+function onParamChange(value, node, weightIndex = null) {
+  setParam(network, node, value, weightIndex);
+  updateUI();
 }
 
 // Canvas Event Listeners

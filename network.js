@@ -56,4 +56,14 @@ function computeOutput(input, network) {
   return result;
 }
 
-export { initNetwork, computeOutput };
+function setParam(network, name, value, index = null) {
+  const [l, n] = name.split("-").map(Number);
+  // check if weight or bias
+  if (index !== null) {
+    network[l][n].weights[index] = value;
+  } else {
+    network[l][n].bias = value;
+  }
+}
+
+export { initNetwork, computeOutput, setParam };
