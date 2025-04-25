@@ -1,5 +1,5 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network.js";
+import { initNetwork, computeOutput, setParam, calcMetrics, learn } from "./network/network.js";
 import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "./utils.js";
 
 // Datasets
