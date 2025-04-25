@@ -1,0 +1,56 @@
+#label {
+  font-size: 3rem;
+}
+
+/* Page Container */
+
+.page__container {
+  gap: 4rem;
+}
+
+/* Grid Container */
+
+.grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 300px;
+}
+
+.grid-container__grid {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(28, 1fr);
+  background-color: black;
+}
+
+.grid-container__buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+
+  button {
+    font-size: 1.2rem;
+  }
+}
+
+/* Mobile  */
+
+@media screen and (max-width: 900px) {
+  .page__container {
+    max-width: 400px;
+    gap: 1rem;
+  }
+
+  .grid-container__grid {
+    width: 100%;
+    touch-action: none;
+  }
+
+  .test-button-group {
+    button {
+      padding: 10px;
+      appearance: none;
+    }
+  }
+}

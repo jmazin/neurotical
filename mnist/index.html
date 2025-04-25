@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+    <title>Neurotical</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="./mnist.css" />
+    <script src="./mnist.js" type="module"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header__title">
+        <h1 class="header__heading">Neurotical</h1>
+      </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="../mushrooms/">AI Mycologist</a></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="page">
+      <h2 class="page__title">MNIST Digit Classifier</h2>
+      <main class="page__main">
+        <div class="page__container">
+          <div class="grid-container">
+            <div id="pixel-grid" class="grid-container__grid"></div>
+          </div>
+          <div id="label"></div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
