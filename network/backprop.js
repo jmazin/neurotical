@@ -31,6 +31,34 @@ function computeGradients(network, data) {
 
       node.gradB += node.dCost_dSum;
     }
+
+    // hidden
+    if (network.length > 2) {
+      for (let l = network.length - 2; l > 0; l--) {
+        const layer = network[l];
+        const nextLayer = network[l + 1];
+        const prevLayer = network[l - 1];
+
+        for (let n = 0; n < layer.length; n++) {
+          const node = layer[n];
+          let dCost_dActivation = 0;
+
+          for (let j = 0; j < nextLayer.length; j++) {
+            const next = nextLayer[j];
+            dCost_dActivation += next.weights[n] * next.dCost_dSum;
+          }
+
+          const dActivation_dSum = activationDeriv(node.sum);
+          node.dCost_dSum = dCost_dActivation * dActivation_dSum;
+
+          for (let w = 0; w < node.weights.length; w++) {
+            node.gradW[w] += prevLayer[w].act * node.dCost_dSum;
+          }
+
+          node.gradB += node.dCost_dSum;
+        }
+      }
+    }
   }
 }
 
