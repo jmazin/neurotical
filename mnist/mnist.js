@@ -1,5 +1,5 @@
 // Network functions
-import { initNetwork, computeOutput } from "../network/network.js";
+import { initNetwork, computeOutput, calcMetrics } from "../network/network.js";
 
 // UI helpers
 import { buildGrid, drawGrid } from "./ui/grid.js";
@@ -8,6 +8,7 @@ import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 // DOM elements
 const elements = {
   pixelGrid: document.getElementById("pixel-grid"),
+  testAccuracy: document.getElementById("test-accuracy"),
 };
 
 // Buttons
@@ -44,6 +45,7 @@ function initializeUI() {
   layerSizes = [PIXEL_COUNT, 100, 10];
   network = initNetwork(layerSizes);
   refreshPrediction();
+  updateTestsetAccuracy();
 }
 
 // Attach event listeners
@@ -88,4 +90,10 @@ function updateGridUI() {
 function refreshPrediction() {
   const output = computeOutput(input, network);
   updatePredictionUI(output, label);
+}
+
+function updateTestsetAccuracy() {
+  const { correct } = calcMetrics(network, testSet);
+  const percent = ((correct / testSet.length) * 100).toFixed(0);
+  elements.testAccuracy.innerText = `${correct}/${testSet.length} = ${percent}%`;
 }
