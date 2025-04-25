@@ -30,6 +30,7 @@ const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
   learnRate: document.getElementById("learn-rate"),
   hiddenLayerSize: document.getElementById("layers-hidden"),
+  blended: document.getElementById("blended"),
 };
 
 // State variables
@@ -45,6 +46,7 @@ let learnRate = 1;
 let stopped = true;
 let requestId;
 let hiddenLayerContent = "";
+let blended = false;
 
 // Initialize UI
 populateDatasetSelector();
@@ -69,7 +71,7 @@ function resetUI() {
 
 function updateUI() {
   const position = { lock: lockPos, coords };
-  draw(network, data, position);
+  draw(network, data, position, blended);
   updateCoords();
 
   if (coords) {
@@ -165,6 +167,11 @@ inputs.hiddenLayerSize.addEventListener("input", (e) => {
   layerSizes = [layerSizes.at(0), ...hidden, layerSizes.at(-1)];
   network = initNetwork(layerSizes);
   buildControlsUI(network, onParamChange);
+  updateUI();
+});
+
+inputs.blended.addEventListener("change", (e) => {
+  blended = e.target.checked;
   updateUI();
 });
 

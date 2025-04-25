@@ -15,12 +15,12 @@ function initCanvas(dim) {
   imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
 }
 
-function draw(network, data, position) {
+function draw(network, data, position, blended) {
   for (let i = 0; i < canvasSize; i++) {
     for (let j = 0; j < canvasSize; j++) {
       const coords = toNormalized(i, j, canvasSize);
       const output = computeOutput(coords, network);
-      const color = MUSHROOMS[argmax(output)].predictionColor;
+      const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
       setPixel(i, j, color);
     }
   }
@@ -30,9 +30,11 @@ function draw(network, data, position) {
   drawAxes();
   drawDot([0, 0]);
 
-  data.forEach(({ input, target }) => {
-    drawDot(input, MUSHROOMS[target.indexOf(1)].color);
-  });
+  if (!blended) {
+    data.forEach(({ input, target }) => {
+      drawDot(input, MUSHROOMS[target.indexOf(1)].color);
+    });
+  }
 
   if (position.lock) drawDot(position.coords, "purple");
 }
@@ -65,6 +67,16 @@ function drawDot([x, y], color = "black") {
   ctx.fillStyle = color;
   ctx.arc(i, j, 5, 0, 2 * Math.PI);
   ctx.fill();
+}
+
+function blendColor(output) {
+  return output.reduce(
+    (acc, value, i) => {
+      const scaledColor = MUSHROOMS[i].predictionColor.map((c) => c * value);
+      return acc.map((val, j) => val + scaledColor[j]);
+    },
+    [0, 0, 0]
+  );
 }
 
 export { initCanvas, draw };

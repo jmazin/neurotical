@@ -60,7 +60,14 @@ body {
 
 /* Canvas container */
 
+.canvas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .canvas-container__canvas {
+  max-width: max-content;
   border: 1px solid black;
 }
 
