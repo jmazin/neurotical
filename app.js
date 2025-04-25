@@ -15,6 +15,11 @@ const elements = {
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
+};
+
+// Buttons
+const buttons = {
+  learn: document.getElementById("learn"),
   step: document.getElementById("step"),
   reset: document.getElementById("reset"),
 };
@@ -32,6 +37,9 @@ const layerSizes = [2, 2];
 let network;
 let datasetName = "line";
 let data;
+let learnRate = 0.1;
+let stopped = true;
+let requestId;
 
 // Initialize UI
 populateDatasetSelector();
@@ -102,12 +110,25 @@ inputs.datasetSelector.addEventListener("change", (e) => {
   resetUI();
 });
 
-elements.step.addEventListener("click", () => {
-  learn(network, data, 0.1);
+buttons.step.addEventListener("click", () => {
+  learn(network, data, learnRate);
   updateUI();
 });
 
-elements.reset.addEventListener("click", () => {
+buttons.learn.addEventListener("click", () => {
+  if (stopped) {
+    animate();
+    buttons.step.disabled = true;
+    buttons.learn.textContent = "stop";
+  } else {
+    cancelAnimationFrame(requestId);
+    buttons.step.disabled = false;
+    buttons.learn.textContent = "learn";
+  }
+  stopped = !stopped;
+});
+
+buttons.reset.addEventListener("click", () => {
   network = initNetwork(layerSizes);
   updateUI();
 });
@@ -137,4 +158,11 @@ function populateDatasetSelector() {
     option.value = option.textContent = file;
     inputs.datasetSelector.append(option);
   });
+}
+
+// Animation
+function animate() {
+  learn(network, data, learnRate);
+  updateUI();
+  requestId = requestAnimationFrame(animate);
 }

@@ -25,6 +25,11 @@ button {
   font-size: 1rem;
 }
 
+.button-group {
+  display: flex;
+  gap: 1rem;
+}
+
 body {
   background-color: snow;
   font-family: "Inter", sans-serif;
@@ -105,7 +110,8 @@ body {
 }
 
 .step,
-.reset {
+.reset,
+.learn {
   width: 60px;
 }
 
