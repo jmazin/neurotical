@@ -1,5 +1,9 @@
+// Network functions
+import { initNetwork, computeOutput } from "../network/network.js";
+
 // UI helpers
 import { buildGrid, drawGrid } from "./ui/grid.js";
+import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 
 // DOM elements
 const elements = {
@@ -20,6 +24,7 @@ let testSet = [];
 let testNum = 0;
 let label = null;
 let input = Array(PIXEL_COUNT).fill(0);
+let layerSizes, network;
 
 // Initialize
 await loadTestSet();
@@ -36,6 +41,10 @@ async function loadTestSet() {
 function initializeUI() {
   buildGrid(PIXEL_COUNT);
   attachEventListeners();
+  buildPredictionUI();
+  layerSizes = [PIXEL_COUNT, 100, 10];
+  network = initNetwork(layerSizes);
+  refreshPrediction();
 }
 
 // Attach event listeners
@@ -75,4 +84,10 @@ function clearGrid() {
 function updateGridUI() {
   elements.label.textContent = label;
   drawGrid(input);
+  refreshPrediction();
+}
+
+function refreshPrediction() {
+  const output = computeOutput(input, network);
+  updatePredictionUI(output, label);
 }

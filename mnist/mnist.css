@@ -34,6 +34,36 @@
   }
 }
 
+/* Info Container */
+
+.info-container {
+  flex-direction: row;
+}
+
+/* Prediction */
+
+.prediction__header {
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+.prediction {
+  font-size: 1.3rem;
+}
+
+.first {
+  font-weight: bold;
+}
+
+.prediction-val {
+  width: 70px;
+}
+
+.digit-class {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* Mobile  */
 
 @media screen and (max-width: 900px) {
