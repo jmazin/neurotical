@@ -25,6 +25,8 @@ for (let i = 0; i < canvasSize; i++) {
 }
 
 ctx.putImageData(imageData, 0, 0);
+drawAxes();
+drawDot([0, 0]);
 
 //
 //
@@ -34,4 +36,27 @@ function computeColor([x, y]) {
   const green = Math.floor((Math.abs(y * 2) * 255) / (canvasSize - 1));
   const blue = 100;
   return [red, green, blue];
+}
+
+function drawAxes() {
+  // x axis
+  ctx.beginPath();
+  ctx.moveTo(0, halfSize);
+  ctx.lineTo(canvasSize, halfSize);
+  ctx.stroke();
+
+  // y axis
+  ctx.beginPath();
+  ctx.moveTo(halfSize, 0);
+  ctx.lineTo(halfSize, canvasSize);
+  ctx.stroke();
+}
+
+function drawDot([x, y], color = "black") {
+  const canvasX = x + halfSize;
+  const canvasY = halfSize - y;
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
+  ctx.fill();
 }
