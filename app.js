@@ -2,6 +2,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 const canvasSize = 500;
+const halfSize = canvasSize / 2;
 canvas.width = canvasSize;
 canvas.height = canvasSize;
 
@@ -17,7 +18,7 @@ function setPixel(i, j, [r, g, b, a = 150]) {
 
 for (let i = 0; i < canvasSize; i++) {
   for (let j = 0; j < canvasSize; j++) {
-    const coords = [i, j];
+    const coords = [i - halfSize, halfSize - j];
     const color = computeColor(coords);
     setPixel(i, j, color);
   }
@@ -28,9 +29,9 @@ ctx.putImageData(imageData, 0, 0);
 //
 //
 
-function computeColor([i, j]) {
-  const red = Math.floor((i * 255) / (canvasSize - 1));
-  const green = Math.floor((j * 255) / (canvasSize - 1));
+function computeColor([x, y]) {
+  const red = Math.floor((Math.abs(x * 2) * 255) / (canvasSize - 1));
+  const green = Math.floor((Math.abs(y * 2) * 255) / (canvasSize - 1));
   const blue = 100;
   return [red, green, blue];
 }
