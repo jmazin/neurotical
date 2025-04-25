@@ -188,6 +188,16 @@ inputs.rate.addEventListener("input", (e) => {
   updateOutputUI();
 });
 
+// Event listeners -- Grid
+elements.pixelGrid.addEventListener("mouseover", (e) => {
+  if (e.target === e.currentTarget || !e.buttons) return;
+
+  const index = +e.target.id.split("-")[1];
+  updateInput(index);
+  label = null;
+  updateGridUI();
+});
+
 function updateTestsetAccuracy() {
   const { correct } = calcMetrics(network, testSet);
   const percent = ((correct / testSet.length) * 100).toFixed(0);
@@ -218,4 +228,24 @@ function animate() {
   updateOutputUI();
   elements.stepTime.textContent = formatElapsedTime(elapsed);
   requestId = requestAnimationFrame(animate);
+}
+
+function updateInput(index) {
+  const center = 0.7;
+  const side = 0.3;
+  const width = 28;
+
+  const add = (i, value) => {
+    input[i] = Math.min(input[i] + value, 1);
+  };
+
+  add(index, center);
+
+  const isLeftEdge = index % width === 0;
+  const isRightEdge = (index + 1) % width === 0;
+
+  if (!isLeftEdge) add(index - 1, side);
+  if (!isRightEdge) add(index + 1, side);
+  if (index + width < PIXEL_COUNT) add(index + width, side);
+  if (index - width >= 0) add(index - width, side);
 }
