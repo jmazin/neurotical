@@ -27,6 +27,7 @@ const buttons = {
 // Inputs
 const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
+  learnRate: document.getElementById("learn-rate"),
 };
 
 // State variables
@@ -52,6 +53,7 @@ function resetUI() {
   buildPredictionUI();
   buildControlsUI(network, onParamChange);
   inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
+  inputs.learnRate.value = learnRate;
   updateUI();
 }
 
@@ -131,6 +133,10 @@ buttons.learn.addEventListener("click", () => {
 buttons.reset.addEventListener("click", () => {
   network = initNetwork(layerSizes);
   updateUI();
+});
+
+inputs.learnRate.addEventListener("input", (e) => {
+  learnRate = +e.target.value;
 });
 
 function setCoords(e) {

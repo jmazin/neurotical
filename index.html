@@ -42,13 +42,12 @@
                 <button id="learn" class="learn">learn</button>
                 <button id="step" class="step">step</button>
               </div>
-              <button id="reset" class="reset">reset</button>
-            </section>
-            <section class="learning-controls">
-              <h3>Training data</h3>
               <label>
+                <span>training data:</span>
                 <select id="dataset-selector"></select>
               </label>
+              <label>learn rate:<input type="number" id="learn-rate" min="0" step=".1" /> </label>
+              <button id="reset" class="reset">reset</button>
             </section>
           </div>
           <section class="network-controls">
