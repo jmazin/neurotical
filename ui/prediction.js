@@ -3,6 +3,8 @@ import { MUSHROOMS } from "../mushroom-info.js";
 const container = document.getElementById("prediction");
 
 function buildPredictionUI() {
+  container.innerHTML = "";
+
   MUSHROOMS.forEach(({ label, color }) => {
     const mushroomEl = document.createElement("div");
     mushroomEl.className = "prediction__mushroom";

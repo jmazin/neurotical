@@ -14,6 +14,13 @@ section {
   }
 }
 
+select,
+input {
+  height: 1.4rem;
+  font-family: "Inter";
+  font-size: 1rem;
+}
+
 body {
   background-color: snow;
   font-family: "Inter", sans-serif;
@@ -82,6 +89,15 @@ body {
 .prediction__mushroom {
   display: flex;
   justify-content: space-between;
+}
+
+/* Learning Controls */
+
+.learning-controls {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 /* Network Controls */

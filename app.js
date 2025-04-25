@@ -1,7 +1,9 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam } from "./network.js";
 import { toNormalized } from "./utils.js";
-import { data } from "./training.js";
+
+// Datasets
+import * as datasets from "./training-data/index.js";
 
 // UI helpers
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
@@ -13,18 +15,33 @@ const elements = {
   point: document.getElementById("point"),
 };
 
+// Inputs
+const inputs = {
+  datasetSelector: document.getElementById("dataset-selector"),
+};
+
 // State variables
 let coords = null;
 let lockPos = false;
 let dim = 500;
 const layerSizes = [2, 2];
-const network = initNetwork(layerSizes);
+let network;
+let datasetName = "line";
+let data;
 
 // Initialize UI
-initCanvas(dim);
-buildPredictionUI();
-buildControlsUI(network, onParamChange);
-updateUI();
+populateDatasetSelector();
+resetUI();
+
+function resetUI() {
+  data = datasets[datasetName].data;
+  network = initNetwork(layerSizes);
+  initCanvas(dim);
+  buildPredictionUI();
+  buildControlsUI(network, onParamChange);
+  inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
+  updateUI();
+}
 
 function updateUI() {
   const position = { lock: lockPos, coords };
@@ -69,6 +86,12 @@ elements.canvas.addEventListener("dblclick", () => {
   updateUI();
 });
 
+// Event Listeners
+inputs.datasetSelector.addEventListener("change", (e) => {
+  datasetName = e.target.value;
+  resetUI();
+});
+
 function setCoords(e) {
   coords = toNormalized(e.offsetX, e.offsetY, dim);
 }
@@ -85,4 +108,13 @@ function renderPrediction() {
   const output = computeOutput(coords, network);
   point.textContent = `x: ${coords[0].toFixed(3)}, y: ${coords[1].toFixed(3)}`;
   updatePredictionUI(output);
+}
+
+// Create <option> elements for datasets
+function populateDatasetSelector() {
+  Object.keys(datasets).forEach((file) => {
+    const option = document.createElement("option");
+    option.value = option.textContent = file;
+    inputs.datasetSelector.append(option);
+  });
 }
