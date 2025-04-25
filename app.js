@@ -1,24 +1,36 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-// Draw a filled rectangle
-ctx.fillStyle = "blue";
-ctx.fillRect(20, 20, 50, 50);
+const canvasSize = 500;
+canvas.width = canvasSize;
+canvas.height = canvasSize;
 
-// Draw a stroked rectangle
-ctx.strokeStyle = "red";
-ctx.strokeRect(230, 20, 50, 50);
+const imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
 
-// Draw a circle (arc)
-ctx.beginPath();
-ctx.arc(150, 45, 25, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle
-ctx.fillStyle = "orange";
-ctx.fill();
+function setPixel(i, j, [r, g, b, a = 150]) {
+  const index = (i + j * canvasSize) * 4;
+  imageData.data[index] = r;
+  imageData.data[index + 1] = g;
+  imageData.data[index + 2] = b;
+  imageData.data[index + 3] = a;
+}
 
-// Draw a line
-ctx.beginPath();
-ctx.moveTo(20, 115); // Starting point
-ctx.lineTo(280, 95); // Line to this point
-ctx.strokeStyle = "green";
-ctx.lineWidth = 15;
-ctx.stroke();
+for (let i = 0; i < canvasSize; i++) {
+  for (let j = 0; j < canvasSize; j++) {
+    const coords = [i, j];
+    const color = computeColor(coords);
+    setPixel(i, j, color);
+  }
+}
+
+ctx.putImageData(imageData, 0, 0);
+
+//
+//
+
+function computeColor([i, j]) {
+  const red = Math.floor((i * 255) / (canvasSize - 1));
+  const green = Math.floor((j * 255) / (canvasSize - 1));
+  const blue = 100;
+  return [red, green, blue];
+}
