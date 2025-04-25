@@ -1,3 +1,5 @@
+import { argmax } from "./utils.js";
+
 function initNetwork(layerSizes) {
   return layerSizes.map((layerSize, l) => {
     const prevLayerSize = layerSizes[l - 1] || 0;
@@ -66,4 +68,19 @@ function setParam(network, name, value, index = null) {
   }
 }
 
-export { initNetwork, computeOutput, setParam };
+function calcMetrics(network, data) {
+  let correct = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    const { input, label } = data[i];
+    const output = computeOutput(input, network);
+
+    if (argmax(output) === label.indexOf(1)) {
+      correct++;
+    }
+  }
+
+  return { correct };
+}
+
+export { initNetwork, computeOutput, setParam, calcMetrics };

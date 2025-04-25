@@ -1,5 +1,5 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam } from "./network.js";
+import { initNetwork, computeOutput, setParam, calcMetrics } from "./network.js";
 import { toNormalized } from "./utils.js";
 
 // Datasets
@@ -13,6 +13,7 @@ import { buildControlsUI } from "./ui/network-controls.js";
 const elements = {
   canvas: document.getElementById("canvas"),
   point: document.getElementById("point"),
+  accuracy: document.getElementById("accuracy"),
 };
 
 // Inputs
@@ -51,6 +52,10 @@ function updateUI() {
   if (coords) {
     renderPrediction();
   }
+
+  const { correct } = calcMetrics(network, data);
+  const percent = ((correct / data.length) * 100).toFixed(2);
+  elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
 }
 
 function onParamChange(value, node, weightIndex = null) {
