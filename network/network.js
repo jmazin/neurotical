@@ -1,7 +1,7 @@
-import { argmax } from "../utils.js";
+import { argmax, standardizeNetwork } from "../utils.js";
 
 function initNetwork(layerSizes) {
-  return layerSizes.map((layerSize, l) => {
+  const network = layerSizes.map((layerSize, l) => {
     const prevLayerSize = layerSizes[l - 1] || 0;
 
     return Array.from({ length: layerSize }, (_, i) =>
@@ -16,6 +16,8 @@ function initNetwork(layerSizes) {
           }
     );
   });
+
+  return standardizeNetwork(network);
 }
 
 function forwardPass(input, network) {

@@ -51,4 +51,20 @@ function formatElapsedTime(time) {
   return `${elapsed}${units}`;
 }
 
-export { toNormalized, fromNormalized, argmax, numClasses, setInputWidth, formatElapsedTime };
+function standardizeNetwork(network) {
+  return network.map((layer, i) =>
+    layer.map((node) =>
+      i === 0
+        ? {}
+        : {
+            name: node.name,
+            weights: [...node.weights],
+            bias: node.bias,
+            gradW: new Array(node.weights.length).fill(0),
+            gradB: 0,
+          }
+    )
+  );
+}
+
+export { toNormalized, fromNormalized, argmax, numClasses, setInputWidth, formatElapsedTime, standardizeNetwork };

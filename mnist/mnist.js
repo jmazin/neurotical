@@ -6,7 +6,7 @@ import { buildGrid, drawGrid } from "./ui/grid.js";
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 
 // Utils
-import { formatElapsedTime, setInputWidth } from "../utils.js";
+import { formatElapsedTime, setInputWidth, standardizeNetwork } from "../utils.js";
 
 // Trained network
 import trainedNetwork from "./trained-network.js";
@@ -73,7 +73,7 @@ function initializeUI() {
   attachEventListeners();
   buildPredictionUI();
   layerSizes = [PIXEL_COUNT, trainedNetwork[1].length, 10];
-  network = trainedNetwork;
+  network = standardizeNetwork(trainedNetwork);
   refreshPrediction();
   updateTestsetAccuracy();
   learnRate = 1;
