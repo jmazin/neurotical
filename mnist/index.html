@@ -16,7 +16,7 @@
     <link rel="icon" type="image/png" href="../images/mnist.png" />
     <script src="./mnist.js" type="module"></script>
   </head>
-  <body>
+  <body class="is-loading">
     <header class="header">
       <div class="header__title">
         <h1 class="header__heading">Neurotical</h1>
@@ -29,6 +29,7 @@
     </header>
     <div class="page">
       <h2 class="page__title">MNIST Digit Classifier</h2>
+      <div class="page__loading-text">Loading...</div>
       <main class="page__main">
         <div class="metrics">
           <div>test accuracy: <span id="test-accuracy"></span></div>
