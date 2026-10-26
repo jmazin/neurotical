@@ -1,26 +1,28 @@
 import { MUSHROOMS } from "../mushroom-info.js";
 import { computeOutput } from "../../network/network.js";
-import { toNormalized, fromNormalized, argmax } from "../../utils.js";
+import { argmax } from "../../utils.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let canvasSize, halfSize, imageData;
+let canvasSize, canvasHeight, padding, lineY, imageData;
 
 function initCanvas(dim) {
   canvasSize = dim;
-  halfSize = canvasSize / 2;
+  canvasHeight = canvasSize / 5;
+  padding = canvasSize * 0.04;
+  lineY = canvasHeight * 0.45;
   canvas.width = canvasSize;
-  canvas.height = canvasSize;
-  imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
+  canvas.height = canvasHeight;
+  imageData = ctx.getImageData(0, 0, canvasSize, canvasHeight);
 }
 
 function draw(network, data, position, blended) {
   for (let i = 0; i < canvasSize; i++) {
-    for (let j = 0; j < canvasSize; j++) {
-      const coords = toNormalized(i, j, canvasSize);
-      const output = computeOutput(coords, network);
-      const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
+    const x = ((i - padding) / (canvasSize - 2 * padding)) * 2 - 1;
+    const output = computeOutput([x], network);
+    const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
+    for (let j = 0; j < canvasHeight; j++) {
       setPixel(i, j, color);
     }
   }
@@ -28,13 +30,9 @@ function draw(network, data, position, blended) {
   ctx.putImageData(imageData, 0, 0);
 
   drawAxes();
-  drawDot([0, 0]);
-
-  if (!blended) {
-    data.forEach(({ input, target }) => {
-      drawDot(input, MUSHROOMS[target.indexOf(1)].color);
-    });
-  }
+  data.forEach(({ input, target }) => {
+    drawDot(input, MUSHROOMS[target.indexOf(1)].color);
+  });
 
   if (position.lock) drawDot(position.coords, "purple");
 }
@@ -48,24 +46,30 @@ function setPixel(i, j, [r, g, b, a = 150]) {
 }
 
 function drawAxes() {
-  // x axis
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = canvasSize / 500;
   ctx.beginPath();
-  ctx.moveTo(0, halfSize);
-  ctx.lineTo(canvasSize, halfSize);
+  ctx.moveTo(padding, lineY);
+  ctx.lineTo(canvasSize - padding, lineY);
   ctx.stroke();
-
-  // y axis
-  ctx.beginPath();
-  ctx.moveTo(halfSize, 0);
-  ctx.lineTo(halfSize, canvasSize);
-  ctx.stroke();
+  ctx.fillStyle = "black";
+  ctx.font = `${canvasSize / 40}px Inter, sans-serif`;
+  ctx.textAlign = "center";
+  for (let score = 0; score <= 100; score += 25) {
+    const x = padding + (score / 100) * (canvasSize - 2 * padding);
+    ctx.beginPath();
+    ctx.moveTo(x, lineY - canvasSize / 100);
+    ctx.lineTo(x, lineY + canvasSize / 100);
+    ctx.stroke();
+    ctx.fillText(`${score}%`, x, canvasHeight * 0.85);
+  }
 }
 
-function drawDot([x, y], color = "black") {
-  const [i, j] = fromNormalized(x, y, canvasSize);
+function drawDot([x], color = "black") {
+  const i = padding + ((x + 1) / 2) * (canvasSize - 2 * padding);
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(i, j, canvasSize / 100, 0, 2 * Math.PI);
+  ctx.arc(i, lineY, canvasSize / 100, 0, 2 * Math.PI);
   ctx.fill();
 }
 

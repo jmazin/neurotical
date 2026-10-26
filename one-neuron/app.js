@@ -1,6 +1,6 @@
 import { initCanvas, draw } from "./ui/canvas.js";
 import { initNetwork, computeOutput, setParam, calcMetrics, backprop, finiteDiff } from "../network/network.js";
-import { toNormalized, numClasses, setInputWidth, formatElapsedTime } from "../utils.js";
+import { numClasses, formatElapsedTime } from "../utils.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -18,7 +18,6 @@ const elements = {
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
-  outputLayerSize: document.getElementById("layers-output"),
   fps: document.getElementById("fps"),
   stepTime: document.getElementById("step-time"),
   currentResolution: document.getElementById("current-resolution"),
@@ -37,7 +36,6 @@ const buttons = {
 const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
   learnRate: document.getElementById("learn-rate"),
-  hiddenLayerSize: document.getElementById("layers-hidden"),
   blended: document.getElementById("blended"),
   trainingMethod: document.getElementById("training-method"),
 };
@@ -54,7 +52,6 @@ let data;
 let learnRate = 1;
 let stopped = true;
 let requestId;
-let hiddenLayerContent = "";
 let blended = false;
 let fpsUpdate = 0;
 let lastFrame;
@@ -68,7 +65,7 @@ showDemo();
 
 function resetUI() {
   data = datasets[datasetName].data;
-  layerSizes = [2, null];
+  layerSizes = [1, null];
   outputLayerSize = numClasses(data);
   layerSizes[layerSizes.length - 1] = outputLayerSize;
   network = initNetwork(layerSizes);
@@ -77,9 +74,6 @@ function resetUI() {
   buildControlsUI(network, onParamChange);
   inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
   inputs.learnRate.value = learnRate;
-  elements.outputLayerSize.textContent = outputLayerSize;
-  inputs.hiddenLayerSize.value = "";
-  setInputWidth(inputs.hiddenLayerSize);
   elements.currentResolution.textContent = `${dim}px`;
   inputs.trainingMethod.selectedIndex = 1;
   updateUI();
@@ -168,25 +162,6 @@ inputs.learnRate.addEventListener("input", (e) => {
   learnRate = +e.target.value;
 });
 
-inputs.hiddenLayerSize.addEventListener("input", (e) => {
-  const input = e.target;
-
-  const regex = /^$|^\d+(\s\d+)*\s?$/; // Matches only space-separated numbers
-  if (!regex.test(input.value)) {
-    input.value = hiddenLayerContent;
-    return;
-  }
-
-  setInputWidth(input);
-  hiddenLayerContent = input.value;
-
-  const hidden = input.value.trim().split(/\s+/).map(Number).filter(Boolean);
-  layerSizes = [layerSizes.at(0), ...hidden, layerSizes.at(-1)];
-  network = initNetwork(layerSizes);
-  buildControlsUI(network, onParamChange);
-  updateUI();
-});
-
 inputs.blended.addEventListener("change", (e) => {
   blended = e.target.checked;
   updateUI();
@@ -198,14 +173,16 @@ inputs.trainingMethod.addEventListener("change", (e) => {
 });
 
 function setCoords(e) {
-  coords = toNormalized(e.offsetX, e.offsetY, elements.canvas.clientWidth);
+  // Match the line's 4% padding, and ignore the vertical pointer position.
+  const x = (e.offsetX / elements.canvas.clientWidth - 0.04) / 0.92;
+  coords = [Math.max(-1, Math.min(1, x * 2 - 1))];
 }
 
 function updateCoords() {
   if (coords) {
     renderPrediction();
   } else {
-    point.textContent = `x: --, y: --`;
+    elements.point.textContent = "score: --";
   }
 }
 
@@ -215,7 +192,7 @@ buttons.resMinus.addEventListener("click", () => handleResolutionChange(-1));
 
 function renderPrediction() {
   const output = computeOutput(coords, network);
-  point.textContent = `x: ${coords[0].toFixed(3)}, y: ${coords[1].toFixed(3)}`;
+  elements.point.textContent = `score: ${((coords[0] + 1) * 50).toFixed(1)}%`;
   updatePredictionUI(output);
 }
 
