@@ -1,13 +1,13 @@
 function initNetwork() {
-  return [{ bias: 0 }];
+  return [{ weight: 1, bias: 0 }];
 }
 
-function setParam(network, name, value) {
-  network[0].bias = value;
+function setParam(network, index, value, param = "bias") {
+  network[index][param] = value;
 }
 
 function computeOutput(input, network) {
-  const sum = input[0] + network[0].bias;
+  const sum = input[0] * network[0].weight + network[0].bias;
   return sum;
 }
 
@@ -31,14 +31,21 @@ function calcMetrics(network, data) {
 function finiteDiff(network, data, learnRate) {
   if (!Number.isFinite(learnRate) || learnRate <= 0) return;
   const node = network[0];
-  const bias = node.bias;
+  const { weight, bias } = node;
   const h = 0.0001;
   const { cost: originalCost } = calcMetrics(network, data);
   node.bias = bias + h;
-  const { cost: changedCost } = calcMetrics(network, data);
-  const gradient = (changedCost - originalCost) / h;
+  const { cost: biasCost } = calcMetrics(network, data);
+  node.bias = bias;
 
-  node.bias = bias - learnRate * gradient;
+  node.weight = weight + h;
+  const { cost: weightCost } = calcMetrics(network, data);
+  node.weight = weight;
+
+  const biasGradient = (biasCost - originalCost) / h;
+  const weightGradient = (weightCost - originalCost) / h;
+  node.bias = bias - learnRate * biasGradient;
+  node.weight = weight - learnRate * weightGradient;
 }
 
 export { initNetwork, computeOutput, setParam, calcMetrics, finiteDiff };

@@ -14,26 +14,27 @@ function buildControlsUI(network, onParamChange) {
     nodeContainer.style.borderColor = EXAM_RESULTS[0].color;
     layerContainer.append(nodeContainer);
 
-    const biasControl = createRangeControl(index);
-    nodeContainer.append(biasControl);
+    const weightControl = createRangeControl(index, "weight");
+    const biasControl = createRangeControl(index, "bias");
+    nodeContainer.append(weightControl, biasControl);
   });
 
-  function createRangeControl(index) {
+  function createRangeControl(index, param) {
     const container = document.createElement("div");
-    container.classList.add("control", "bias");
+    container.classList.add("control", param);
 
-    const input = createRangeInput(index);
-    const display = createDisplay(index);
+    const input = createRangeInput(index, param);
+    const display = createDisplay(index, param);
 
     input.addEventListener("input", (event) => {
       const newValue = +event.target.value;
       display.textContent = newValue.toFixed(5);
-      onParamChange(newValue, index);
+      onParamChange(newValue, index, param);
     });
 
     const label = document.createElement("label");
     label.htmlFor = input.id;
-    label.textContent = "bias";
+    label.textContent = param;
     container.append(label, input, display);
     return container;
   }
@@ -45,25 +46,25 @@ function createContainer(name) {
   return container;
 }
 
-function createRangeInput(index) {
+function createRangeInput(index, param) {
   const input = document.createElement("input");
   input.type = "range";
-  input.min = -2;
-  input.max = 2;
+  input.min = -25;
+  input.max = 25;
   input.step = "any";
   input.className = "control__input";
 
-  const controlName = `${index}-bias`;
+  const controlName = `${index}-${param}`;
   input.id = `input-${controlName}`;
 
   return input;
 }
 
-function createDisplay(index) {
+function createDisplay(index, param) {
   const display = document.createElement("span");
   display.className = "control__value";
 
-  const controlName = `${index}-bias`;
+  const controlName = `${index}-${param}`;
   display.id = `value-${controlName}`;
 
   return display;
@@ -71,13 +72,14 @@ function createDisplay(index) {
 
 function syncControls(network) {
   network.forEach((node, index) => {
-    updateControl(index, node.bias);
+    updateControl(index, node.weight, "weight");
+    updateControl(index, node.bias, "bias");
   });
 }
 
-function updateControl(nodeName, value) {
-  const input = document.getElementById(`input-${nodeName}-bias`);
-  const display = document.getElementById(`value-${nodeName}-bias`);
+function updateControl(nodeName, value, param) {
+  const input = document.getElementById(`input-${nodeName}-${param}`);
+  const display = document.getElementById(`value-${nodeName}-${param}`);
   if (value < Number(input.min)) input.min = Math.floor(value);
   if (value > Number(input.max)) input.max = Math.ceil(value);
   input.value = display.textContent = value.toFixed(5);

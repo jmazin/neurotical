@@ -75,12 +75,15 @@ function updateUI() {
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
   elements.cost.innerText = cost;
-  elements.cutoff.textContent = `${((1 - network[0].bias) * 50).toFixed(1)}%`;
+  const { weight, bias } = network[0];
+  elements.cutoff.textContent = weight === 0
+    ? `none (all ${bias >= 0 ? "pass" : "fail"})`
+    : `${((1 - bias / weight) * 50).toFixed(1)}%${weight < 0 ? " (pass at/below)" : ""}`;
   syncControls(network);
 }
 
-function onParamChange(value, node) {
-  setParam(network, node, value);
+function onParamChange(value, node, param) {
+  setParam(network, node, value, param);
   updateUI();
 }
 
