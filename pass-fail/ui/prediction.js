@@ -21,11 +21,11 @@ function buildPredictionUI() {
   container.appendChild(resultEl);
 }
 
-function updatePredictionUI(sum) {
-  const { label, color } = EXAM_RESULTS[Number(sum >= 0)];
+function updatePredictionUI(output) {
+  const { label, color } = EXAM_RESULTS[Number(output >= 0.5)];
   document.getElementById("prediction-result").style.color = color;
   document.getElementById("prediction-label").textContent = label;
-  document.getElementById("prediction-output").textContent = `sum: ${sum.toFixed(3)}`;
+  document.getElementById("prediction-output").textContent = `output: ${output.toFixed(3)}`;
 }
 
 export { buildPredictionUI, updatePredictionUI };

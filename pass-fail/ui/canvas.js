@@ -21,9 +21,8 @@ function draw(network, data, position, blended, showNetwork = true) {
   if (showNetwork) {
     for (let i = 0; i < canvasSize; i++) {
       const x = ((i - padding) / (canvasSize - 2 * padding)) * 2 - 1;
-      const sum = computeOutput([x], network);
-      const blend = Math.max(0, Math.min(1, (sum + 1) / 2));
-      const color = blended ? blendColor([1 - blend, blend]) : EXAM_RESULTS[Number(sum >= 0)].predictionColor;
+      const output = computeOutput([x], network);
+      const color = blended ? blendColor([1 - output, output]) : EXAM_RESULTS[Number(output >= 0.5)].predictionColor;
       for (let j = 0; j < canvasHeight; j++) {
         setPixel(i, j, color);
       }

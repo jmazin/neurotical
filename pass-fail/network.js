@@ -8,13 +8,12 @@ function setParam(network, index, value, param = "bias") {
 
 function computeOutput(input, network) {
   const sum = input[0] * network[0].weight + network[0].bias;
-  return sum;
+  return 1 / (1 + Math.exp(-sum));
 }
 
 function cost(output, target) {
-  const direction = target[0] === 1 ? 1 : -1;
-  // return -direction * output;
-  return Math.max(0, -direction * output);
+  // The original version compared against zero, but sigmoid outputs are always positive.
+  return Math.abs(output - target[0]);
 }
 
 function calcMetrics(network, data) {
@@ -23,7 +22,7 @@ function calcMetrics(network, data) {
   for (const { input, target } of data) {
     const output = computeOutput(input, network);
     totalCost += cost(output, target);
-    correct += Number(Number(output >= 0) === target[0]);
+    correct += Number(Number(output >= 0.5) === target[0]);
   }
   return { correct, cost: totalCost / data.length };
 }
