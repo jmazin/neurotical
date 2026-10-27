@@ -2,14 +2,14 @@ function initNetwork() {
   return [[{}], [{ name: "1-0", bias: 0 }]];
 }
 
-function computeOutput(input, network) {
-  // Fixed weight = 1; the output is the raw sum.
-  return input[0] + network[1][0].bias;
-}
-
 function setParam(network, name, value) {
   const [l, n] = name.split("-").map(Number);
   network[l][n].bias = value;
+}
+
+function computeOutput(input, network) {
+  const sum = input[0] + network[1][0].bias;
+  return sum;
 }
 
 function cost(output, direction) {
