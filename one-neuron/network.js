@@ -49,7 +49,6 @@ function finiteDiff(network, data, learnRate) {
   const params = node.trainWeight ? ["weight", "bias"] : ["bias"];
   const original = params.map((param) => node[param]);
   const h = 0.0001;
-  const { cost: origCost } = calcMetrics(network, data);
   const gradients = params.map((param, index) => {
     node[param] = original[index] + h;
     const { cost: upperCost } = calcMetrics(network, data);
@@ -59,17 +58,8 @@ function finiteDiff(network, data, learnRate) {
     return (upperCost - lowerCost) / (2 * h);
   });
 
-  // Halve an overshooting step until it no longer increases the loss.
-  let rate = learnRate;
-  for (let attempt = 0; attempt < 20; attempt++) {
-    params.forEach((param, index) => {
-      node[param] = original[index] - rate * gradients[index];
-    });
-    if (calcMetrics(network, data).cost <= origCost) return;
-    rate /= 2;
-  }
   params.forEach((param, index) => {
-    node[param] = original[index];
+    node[param] = original[index] - learnRate * gradients[index];
   });
 }
 

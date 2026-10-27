@@ -88,7 +88,7 @@ gradient = (costAtBiasPlusH - costAtBiasMinusH) / (2 * h);
 newBias = bias - learnRate * gradient;
 ```
 
-This is finite-difference training. If a proposed step increases the cost, the demo retries with a smaller step.
+This is finite-difference training. Each step uses the selected learning rate directly. A larger learning rate can move the cutoff too far; a smaller one makes smaller updates.
 
 Initially, 55% is incorrectly predicted to pass. Reducing the bias moves the cutoff right and reduces that example's loss. At bias `-0.2`, the cutoff is 60%, all examples are correct, and the cost is zero.
 
