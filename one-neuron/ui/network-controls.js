@@ -1,4 +1,4 @@
-import { MUSHROOMS } from "../mushroom-info.js";
+import { EXAM_RESULTS } from "../exam-results.js";
 
 const networkContainer = document.getElementById("network-controls");
 
@@ -15,15 +15,11 @@ function buildControlsUI(networkWithInput, onParamChange) {
       const nodeContainer = createContainer("node");
       if (isOutputLayer) {
         nodeContainer.classList.add("output");
-        nodeContainer.style.borderColor = MUSHROOMS[i].color;
+        nodeContainer.style.borderColor = EXAM_RESULTS[i].color;
       }
       layerContainer.append(nodeContainer);
 
-      // Add weight controls
-      node.weights.forEach((_, i) => {
-        const weightControl = createRangeControl(node, i);
-        nodeContainer.append(weightControl);
-      });
+      if (node.trainWeight) nodeContainer.append(createRangeControl(node, 0));
 
       // Add bias control
       const biasControl = createRangeControl(node);
@@ -44,7 +40,10 @@ function buildControlsUI(networkWithInput, onParamChange) {
       onParamChange(newValue, node.name, weightIndex);
     });
 
-    container.append(input, display);
+    const label = document.createElement("label");
+    label.htmlFor = input.id;
+    label.textContent = weightIndex === null ? "bias" : "weight";
+    container.append(label, input, display);
     return container;
   }
 }
@@ -58,8 +57,8 @@ function createContainer(name) {
 function createRangeInput(node, weightIndex) {
   const input = document.createElement("input");
   input.type = "range";
-  input.min = -25;
-  input.max = 25;
+  input.min = weightIndex === null ? -2 : -10;
+  input.max = weightIndex === null ? 2 : 10;
   input.step = "any";
   input.className = "control__input";
 
@@ -82,10 +81,7 @@ function createDisplay(node, weightIndex) {
 function syncControls(network) {
   network.forEach((layer) => {
     layer.forEach((node) => {
-      node.weights.forEach((weight, weightIndex) => {
-        updateControl(node.name, weight, weightIndex);
-      });
-
+      if (node.trainWeight) updateControl(node.name, node.weight, 0);
       updateControl(node.name, node.bias);
     });
   });
@@ -94,6 +90,8 @@ function syncControls(network) {
 function updateControl(nodeName, value, index = "bias") {
   const input = document.getElementById(`input-${nodeName}-${index}`);
   const display = document.getElementById(`value-${nodeName}-${index}`);
+  if (value < Number(input.min)) input.min = Math.floor(value);
+  if (value > Number(input.max)) input.max = Math.ceil(value);
   input.value = display.textContent = value.toFixed(5);
 }
 

@@ -32,27 +32,16 @@
         <div class="metrics">
           <div id="accuracy"></div>
           <div class="metrics__cost">cost: <span id="cost"></span></div>
+          <div>cutoff: <span id="cutoff"></span></div>
         </div>
         <section class="page__container">
           <div class="canvas-container">
             <canvas id="canvas" class="canvas-container__canvas"></canvas>
             <div class="canvas-container__controls">
-              <div class="resolution">
-                <div>resolution:</div>
-                <div class="resolution__buttons">
-                  <button id="resolution__minus">-</button>
-                  <button id="resolution__plus" disabled>+</button>
-                </div>
-                <div id="current-resolution"></div>
-              </div>
               <label>
                 <input type="checkbox" id="blended" />
                 <span>blended</span>
               </label>
-            </div>
-            <div class="timings">
-              <span class="timings__fps">fps: <span id="fps">--</span></span>
-              <span class="timings__step-time">step time: <span id="step-time">--</span></span>
             </div>
           </div>
           <div class="info-container">
@@ -71,14 +60,28 @@
                 <span>training data:</span>
                 <select id="dataset-selector"></select>
               </label>
+              <label>learn rate:<input type="number" id="learn-rate" min="0" step="0.1" /> </label>
               <label>
-                <span>method:</span>
-                <select id="training-method">
-                  <option value="finite">finite diff</option>
-                  <option value="backprop">backprop</option>
-                </select></label
-              >
-              <label>learn rate:<input type="number" id="learn-rate" min="0" step="1" /> </label>
+                <span>loss:</span>
+                <select id="loss">
+                  <option value="squared">Squared error</option>
+                  <option value="difference" selected>Difference</option>
+                </select>
+              </label>
+              <label>
+                <span>train:</span>
+                <select id="training-parameters">
+                  <option value="bias">Bias only (weight = 1)</option>
+                  <option value="both">Weight and bias</option>
+                </select>
+              </label>
+              <label>
+                <span>activation:</span>
+                <select id="activation">
+                  <option value="linear">Raw sum (linear)</option>
+                  <option value="sigmoid">Sigmoid</option>
+                </select>
+              </label>
               <button id="reset" class="reset">reset</button>
             </section>
           </div>

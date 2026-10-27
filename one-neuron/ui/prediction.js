@@ -1,39 +1,33 @@
-import { MUSHROOMS } from "../mushroom-info.js";
-import { numClasses } from "../../utils.js";
+import { EXAM_RESULTS } from "../exam-results.js";
 
 const container = document.getElementById("prediction");
 
-function buildPredictionUI(data) {
+function buildPredictionUI() {
   container.innerHTML = "";
 
-  MUSHROOMS.slice(0, numClasses(data)).forEach(({ label, color }) => {
-    const mushroomEl = document.createElement("div");
-    mushroomEl.className = "prediction__mushroom";
-    mushroomEl.id = `prediction-${label}`;
-    mushroomEl.style.color = color;
+  const resultEl = document.createElement("div");
+  resultEl.className = "prediction__mushroom";
+  resultEl.id = "prediction-result";
 
-    const labelEl = document.createElement("div");
-    labelEl.className = "prediction__label";
-    labelEl.textContent = label;
+  const labelEl = document.createElement("div");
+  labelEl.className = "prediction__label";
+  labelEl.id = "prediction-label";
 
-    const valueEl = document.createElement("div");
-    valueEl.className = "prediction__value";
+  const valueEl = document.createElement("div");
+  valueEl.className = "prediction__value";
+  valueEl.id = "prediction-output";
 
-    mushroomEl.append(labelEl, valueEl);
-    container.appendChild(mushroomEl);
-  });
+  resultEl.append(labelEl, valueEl);
+  container.appendChild(resultEl);
 }
 
-function updatePredictionUI(output) {
-  const sortedOutput = [...output].sort((a, b) => b - a);
-
-  output.forEach((_, index) => {
-    const label = MUSHROOMS[index].label;
-    const value = output[index];
-    const element = document.getElementById(`prediction-${label}`);
-    element.style.order = sortedOutput.indexOf(value);
-    element.querySelector(".prediction__value").textContent = value.toFixed(3);
-  });
+function updatePredictionUI(output, network, sum) {
+  const { label, color } = EXAM_RESULTS[Number(sum >= 0)];
+  document.getElementById("prediction-result").style.color = color;
+  document.getElementById("prediction-label").textContent = label;
+  document.getElementById("prediction-output").textContent = network[1][0].activation === "sigmoid"
+    ? `p: ${(output * 100).toFixed(1)}%`
+    : `sum: ${output.toFixed(3)}`;
 }
 
 export { buildPredictionUI, updatePredictionUI };

@@ -1,6 +1,5 @@
-import { MUSHROOMS } from "../mushroom-info.js";
-import { computeOutput } from "../../network/network.js";
-import { argmax } from "../../utils.js";
+import { EXAM_RESULTS } from "../exam-results.js";
+import { computeOutput, computeSum } from "../network.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -18,10 +17,14 @@ function initCanvas(dim) {
 }
 
 function draw(network, data, position, blended) {
+  const isSigmoid = network[1][0].activation === "sigmoid";
   for (let i = 0; i < canvasSize; i++) {
     const x = ((i - padding) / (canvasSize - 2 * padding)) * 2 - 1;
     const output = computeOutput([x], network);
-    const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
+    const sum = computeSum([x], network);
+    // Linear mode maps its raw sum to colors; sigmoid uses its probability.
+    const blend = isSigmoid ? output : Math.max(0, Math.min(1, (output + 1) / 2));
+    const color = blended ? blendColor([1 - blend, blend]) : EXAM_RESULTS[Number(sum >= 0)].predictionColor;
     for (let j = 0; j < canvasHeight; j++) {
       setPixel(i, j, color);
     }
@@ -30,9 +33,14 @@ function draw(network, data, position, blended) {
   ctx.putImageData(imageData, 0, 0);
 
   drawAxes();
+  // Keep conflicting labels at the same score visible instead of covering them.
+  const points = new Map();
   data.forEach(({ input, target }) => {
-    drawDot(input, MUSHROOMS[target.indexOf(1)].color);
+    const point = points.get(input[0]) ?? { input, colors: new Set() };
+    point.colors.add(EXAM_RESULTS[target[0]].color);
+    points.set(input[0], point);
   });
+  points.forEach(({ input, colors }) => drawDot(input, [...colors]));
 
   if (position.lock) drawDot(position.coords, "purple");
 }
@@ -67,19 +75,24 @@ function drawAxes() {
 
 function drawDot([x], color = "black") {
   const i = padding + ((x + 1) / 2) * (canvasSize - 2 * padding);
-  ctx.beginPath();
-  ctx.fillStyle = color;
-  ctx.arc(i, lineY, canvasSize / 100, 0, 2 * Math.PI);
-  ctx.fill();
+  const colors = Array.isArray(color) ? color : [color];
+  colors.forEach((fill, index) => {
+    ctx.beginPath();
+    ctx.fillStyle = fill;
+    if (colors.length > 1) ctx.moveTo(i, lineY);
+    ctx.arc(i, lineY, canvasSize / 100, index / colors.length * 2 * Math.PI, (index + 1) / colors.length * 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+  });
 }
 
 function blendColor(output) {
   return output.reduce(
     (acc, value, i) => {
-      const scaledColor = MUSHROOMS[i].predictionColor.map((c) => c * value);
+      const scaledColor = EXAM_RESULTS[i].predictionColor.map((c) => c * value);
       return acc.map((val, j) => val + scaledColor[j]);
     },
-    [0, 0, 0]
+    [0, 0, 0],
   );
 }
 

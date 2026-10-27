@@ -1,6 +1,5 @@
 import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics, backprop, finiteDiff } from "../network/network.js";
-import { numClasses, formatElapsedTime } from "../utils.js";
+import { initNetwork, computeOutput, computeSum, setParam, calcMetrics, finiteDiff as learn } from "./network.js";
 
 // Datasets
 import * as datasets from "./training-data/index.js";
@@ -9,8 +8,7 @@ import * as datasets from "./training-data/index.js";
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 import { buildControlsUI, syncControls } from "./ui/network-controls.js";
 
-// Canvas sizes
-const CANVAS_SIZES = [100, 300, 500];
+const CANVAS_WIDTH = 500;
 
 // DOM Elements
 const elements = {
@@ -18,9 +16,7 @@ const elements = {
   point: document.getElementById("point"),
   accuracy: document.getElementById("accuracy"),
   cost: document.getElementById("cost"),
-  fps: document.getElementById("fps"),
-  stepTime: document.getElementById("step-time"),
-  currentResolution: document.getElementById("current-resolution"),
+  cutoff: document.getElementById("cutoff"),
 };
 
 // Buttons
@@ -28,8 +24,6 @@ const buttons = {
   learn: document.getElementById("learn"),
   step: document.getElementById("step"),
   reset: document.getElementById("reset"),
-  resPlus: document.getElementById("resolution__plus"),
-  resMinus: document.getElementById("resolution__minus"),
 };
 
 // Inputs
@@ -37,26 +31,21 @@ const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
   learnRate: document.getElementById("learn-rate"),
   blended: document.getElementById("blended"),
-  trainingMethod: document.getElementById("training-method"),
+  activation: document.getElementById("activation"),
+  loss: document.getElementById("loss"),
+  trainingParameters: document.getElementById("training-parameters"),
 };
 
 // State variables
 let coords = null;
 let lockPos = false;
-let dim = CANVAS_SIZES.at(-1);
-let layerSizes;
-let outputLayerSize;
 let network;
-let datasetName = "line";
+let datasetName = "set-1";
 let data;
-let learnRate = 1;
+let learnRate = 0.1;
 let stopped = true;
 let requestId;
 let blended = false;
-let fpsUpdate = 0;
-let lastFrame;
-let elapsed;
-let learn = backprop;
 
 // Initialize UI
 populateDatasetSelector();
@@ -65,17 +54,12 @@ showDemo();
 
 function resetUI() {
   data = datasets[datasetName].data;
-  layerSizes = [1, null];
-  outputLayerSize = numClasses(data);
-  layerSizes[layerSizes.length - 1] = outputLayerSize;
-  network = initNetwork(layerSizes);
-  initCanvas(dim);
-  buildPredictionUI(data);
+  network = initNetwork(inputs.activation.value, inputs.trainingParameters.value === "both", inputs.loss.value);
+  initCanvas(CANVAS_WIDTH);
+  buildPredictionUI();
   buildControlsUI(network, onParamChange);
   inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
   inputs.learnRate.value = learnRate;
-  elements.currentResolution.textContent = `${dim}px`;
-  inputs.trainingMethod.selectedIndex = 1;
   updateUI();
 }
 
@@ -92,6 +76,10 @@ function updateUI() {
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
   elements.cost.innerText = cost;
+  const { weight, bias } = network[1][0];
+  elements.cutoff.textContent = weight === 0
+    ? `none (all ${bias >= 0 ? "pass" : "fail"})`
+    : `${((1 - bias / weight) * 50).toFixed(1)}%${weight < 0 ? " (pass at/below)" : ""}`;
   syncControls(network.slice(1));
 }
 
@@ -148,13 +136,12 @@ buttons.learn.addEventListener("click", () => {
     cancelAnimationFrame(requestId);
     buttons.step.disabled = false;
     buttons.learn.textContent = "learn";
-    elements.fps.textContent = elements.stepTime.textContent = "--";
   }
   stopped = !stopped;
 });
 
 buttons.reset.addEventListener("click", () => {
-  network = initNetwork(layerSizes);
+  network = initNetwork(inputs.activation.value, inputs.trainingParameters.value === "both", inputs.loss.value);
   updateUI();
 });
 
@@ -162,14 +149,27 @@ inputs.learnRate.addEventListener("input", (e) => {
   learnRate = +e.target.value;
 });
 
-inputs.blended.addEventListener("change", (e) => {
-  blended = e.target.checked;
+inputs.activation.addEventListener("change", () => {
+  network[1][0].activation = inputs.activation.value;
   updateUI();
 });
 
-inputs.trainingMethod.addEventListener("change", (e) => {
-  const val = e.target.value;
-  learn = val === "finite" ? finiteDiff : backprop;
+inputs.loss.addEventListener("change", () => {
+  network[1][0].loss = inputs.loss.value;
+  updateUI();
+});
+
+inputs.trainingParameters.addEventListener("change", () => {
+  const node = network[1][0];
+  node.trainWeight = inputs.trainingParameters.value === "both";
+  if (!node.trainWeight) node.weight = 1;
+  buildControlsUI(network, onParamChange);
+  updateUI();
+});
+
+inputs.blended.addEventListener("change", (e) => {
+  blended = e.target.checked;
+  updateUI();
 });
 
 function setCoords(e) {
@@ -186,14 +186,10 @@ function updateCoords() {
   }
 }
 
-buttons.resPlus.addEventListener("click", () => handleResolutionChange(1));
-
-buttons.resMinus.addEventListener("click", () => handleResolutionChange(-1));
-
 function renderPrediction() {
   const output = computeOutput(coords, network);
   elements.point.textContent = `score: ${((coords[0] + 1) * 50).toFixed(1)}%`;
-  updatePredictionUI(output);
+  updatePredictionUI(output, network, computeSum(coords, network));
 }
 
 // Create <option> elements for datasets
@@ -207,35 +203,10 @@ function populateDatasetSelector() {
 
 // Animation
 function animate() {
-  const start = performance.now();
-  const frameTime = (start - lastFrame) / 1000 || null;
-  lastFrame = start;
   learn(network, data, learnRate);
-  elapsed = performance.now() - start;
   updateUI();
-
-  if (start - fpsUpdate > 500) {
-    fpsUpdate = start;
-    elements.fps.textContent = frameTime ? (1 / frameTime).toFixed(0) : "--";
-    elements.stepTime.textContent = formatElapsedTime(elapsed);
-  }
 
   requestId = requestAnimationFrame(animate);
-}
-
-// Resolution change
-function handleResolutionChange(direction) {
-  const currentIndex = CANVAS_SIZES.indexOf(dim);
-  const newIndex = currentIndex + direction;
-
-  dim = CANVAS_SIZES[newIndex];
-
-  buttons.resMinus.disabled = newIndex === 0;
-  buttons.resPlus.disabled = newIndex === CANVAS_SIZES.length - 1;
-  elements.currentResolution.textContent = `${dim}px`;
-
-  initCanvas(dim);
-  updateUI();
 }
 
 function showDemo() {
