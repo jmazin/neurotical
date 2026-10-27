@@ -13,7 +13,7 @@ function computeOutput(input, network) {
 
 function cost(output, target) {
   const direction = target[0] === 1 ? 1 : -1;
-  console.log(output, direction);
+  // return -direction * output;
   return Math.max(0, -direction * output);
 }
 
