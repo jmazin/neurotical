@@ -8,7 +8,7 @@ let canvasSize, canvasHeight, padding, lineY, imageData;
 
 function initCanvas(dim) {
   canvasSize = dim;
-  canvasHeight = canvasSize / 5;
+  canvasHeight = canvasSize / 10;
   padding = canvasSize * 0.04;
   lineY = canvasHeight * 0.45;
   canvas.width = canvasSize;
@@ -16,18 +16,20 @@ function initCanvas(dim) {
   imageData = ctx.getImageData(0, 0, canvasSize, canvasHeight);
 }
 
-function draw(network, data, position, blended) {
-  for (let i = 0; i < canvasSize; i++) {
-    const x = ((i - padding) / (canvasSize - 2 * padding)) * 2 - 1;
-    const sum = computeOutput([x], network);
-    const blend = Math.max(0, Math.min(1, (sum + 1) / 2));
-    const color = blended ? blendColor([1 - blend, blend]) : EXAM_RESULTS[Number(sum >= 0)].predictionColor;
-    for (let j = 0; j < canvasHeight; j++) {
-      setPixel(i, j, color);
+function draw(network, data, position, blended, showNetwork = true) {
+  ctx.clearRect(0, 0, canvasSize, canvasHeight);
+  if (showNetwork) {
+    for (let i = 0; i < canvasSize; i++) {
+      const x = ((i - padding) / (canvasSize - 2 * padding)) * 2 - 1;
+      const sum = computeOutput([x], network);
+      const blend = Math.max(0, Math.min(1, (sum + 1) / 2));
+      const color = blended ? blendColor([1 - blend, blend]) : EXAM_RESULTS[Number(sum >= 0)].predictionColor;
+      for (let j = 0; j < canvasHeight; j++) {
+        setPixel(i, j, color);
+      }
     }
+    ctx.putImageData(imageData, 0, 0);
   }
-
-  ctx.putImageData(imageData, 0, 0);
 
   drawAxes();
   // Keep conflicting labels at the same score visible instead of covering them.
@@ -77,7 +79,7 @@ function drawDot([x], color = "black") {
     ctx.beginPath();
     ctx.fillStyle = fill;
     if (colors.length > 1) ctx.moveTo(i, lineY);
-    ctx.arc(i, lineY, canvasSize / 100, index / colors.length * 2 * Math.PI, (index + 1) / colors.length * 2 * Math.PI);
+    ctx.arc(i, lineY, canvasSize / 100, (index / colors.length) * 2 * Math.PI, ((index + 1) / colors.length) * 2 * Math.PI);
     ctx.closePath();
     ctx.fill();
   });

@@ -31,6 +31,7 @@ const inputs = {
   datasetSelector: document.getElementById("dataset-selector"),
   learnRate: document.getElementById("learn-rate"),
   blended: document.getElementById("blended"),
+  showNetwork: document.getElementById("show-network"),
 };
 
 // State variables
@@ -43,6 +44,7 @@ let learnRate = 0.1;
 let stopped = true;
 let requestId;
 let blended = false;
+let showNetwork = inputs.showNetwork.checked;
 
 // Initialize UI
 populateDatasetSelector();
@@ -62,7 +64,7 @@ function resetUI() {
 
 function updateUI() {
   const position = { lock: lockPos, coords };
-  draw(network, data, position, blended);
+  draw(network, data, position, blended, showNetwork);
   updateCoords();
 
   if (coords) {
@@ -145,6 +147,11 @@ inputs.learnRate.addEventListener("input", (e) => {
 
 inputs.blended.addEventListener("change", (e) => {
   blended = e.target.checked;
+  updateUI();
+});
+
+inputs.showNetwork.addEventListener("change", (e) => {
+  showNetwork = e.target.checked;
   updateUI();
 });
 
