@@ -12,8 +12,7 @@ function computeOutput(input, network) {
 }
 
 function cost(output, target) {
-  // The original version compared against zero, but sigmoid outputs are always positive.
-  return Math.abs(output - target[0]);
+  return (output - target[0]) ** 2;
 }
 
 function calcMetrics(network, data) {
