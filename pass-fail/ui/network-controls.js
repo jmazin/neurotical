@@ -2,40 +2,33 @@ import { EXAM_RESULTS } from "../exam-results.js";
 
 const networkContainer = document.getElementById("network-controls");
 
-function buildControlsUI(networkWithInput, onParamChange) {
-  const network = networkWithInput.slice(1);
+function buildControlsUI(network, onParamChange) {
   networkContainer.innerHTML = "";
 
-  network.forEach((layer) => {
-    const isOutputLayer = layer === network.at(-1);
-    const layerContainer = createContainer("layer");
-    networkContainer.append(layerContainer);
+  const layerContainer = createContainer("layer");
+  networkContainer.append(layerContainer);
 
-    layer.forEach((node, i) => {
-      const nodeContainer = createContainer("node");
-      if (isOutputLayer) {
-        nodeContainer.classList.add("output");
-        nodeContainer.style.borderColor = EXAM_RESULTS[i].color;
-      }
-      layerContainer.append(nodeContainer);
+  network.forEach((_, index) => {
+    const nodeContainer = createContainer("node");
+    nodeContainer.classList.add("output");
+    nodeContainer.style.borderColor = EXAM_RESULTS[0].color;
+    layerContainer.append(nodeContainer);
 
-      // Add bias control
-      const biasControl = createRangeControl(node);
-      nodeContainer.append(biasControl);
-    });
+    const biasControl = createRangeControl(index);
+    nodeContainer.append(biasControl);
   });
 
-  function createRangeControl(node) {
+  function createRangeControl(index) {
     const container = document.createElement("div");
     container.classList.add("control", "bias");
 
-    const input = createRangeInput(node);
-    const display = createDisplay(node);
+    const input = createRangeInput(index);
+    const display = createDisplay(index);
 
     input.addEventListener("input", (event) => {
       const newValue = +event.target.value;
       display.textContent = newValue.toFixed(5);
-      onParamChange(newValue, node.name);
+      onParamChange(newValue, index);
     });
 
     const label = document.createElement("label");
@@ -52,7 +45,7 @@ function createContainer(name) {
   return container;
 }
 
-function createRangeInput(node) {
+function createRangeInput(index) {
   const input = document.createElement("input");
   input.type = "range";
   input.min = -2;
@@ -60,27 +53,25 @@ function createRangeInput(node) {
   input.step = "any";
   input.className = "control__input";
 
-  const controlName = `${node.name}-bias`;
+  const controlName = `${index}-bias`;
   input.id = `input-${controlName}`;
 
   return input;
 }
 
-function createDisplay(node) {
+function createDisplay(index) {
   const display = document.createElement("span");
   display.className = "control__value";
 
-  const controlName = `${node.name}-bias`;
+  const controlName = `${index}-bias`;
   display.id = `value-${controlName}`;
 
   return display;
 }
 
 function syncControls(network) {
-  network.forEach((layer) => {
-    layer.forEach((node) => {
-      updateControl(node.name, node.bias);
-    });
+  network.forEach((node, index) => {
+    updateControl(index, node.bias);
   });
 }
 

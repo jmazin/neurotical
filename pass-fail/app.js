@@ -73,8 +73,8 @@ function updateUI() {
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
   elements.cost.innerText = cost;
-  elements.cutoff.textContent = `${((1 - network[1][0].bias) * 50).toFixed(1)}%`;
-  syncControls(network.slice(1));
+  elements.cutoff.textContent = `${((1 - network[0].bias) * 50).toFixed(1)}%`;
+  syncControls(network);
 }
 
 function onParamChange(value, node) {
