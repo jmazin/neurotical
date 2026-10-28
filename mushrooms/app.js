@@ -39,6 +39,7 @@ const inputs = {
   learnRate: document.getElementById("learn-rate"),
   hiddenLayerSize: document.getElementById("layers-hidden"),
   blended: document.getElementById("blended"),
+  showNetwork: document.getElementById("show-network"),
   trainingMethod: document.getElementById("training-method"),
 };
 
@@ -56,6 +57,7 @@ let stopped = true;
 let requestId;
 let hiddenLayerContent = "";
 let blended = false;
+let showNetwork = inputs.showNetwork.checked;
 let fpsUpdate = 0;
 let lastFrame;
 let elapsed;
@@ -87,7 +89,7 @@ function resetUI() {
 
 function updateUI() {
   const position = { lock: lockPos, coords };
-  draw(network, data, position, blended);
+  draw(network, data, position, blended, showNetwork);
   updateCoords();
 
   if (coords) {
@@ -189,6 +191,11 @@ inputs.hiddenLayerSize.addEventListener("input", (e) => {
 
 inputs.blended.addEventListener("change", (e) => {
   blended = e.target.checked;
+  updateUI();
+});
+
+inputs.showNetwork.addEventListener("change", (e) => {
+  showNetwork = e.target.checked;
   updateUI();
 });
 

@@ -77,9 +77,8 @@ function updateUI() {
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
   elements.cost.innerText = cost;
   const { weight, bias } = network[1][0];
-  elements.cutoff.textContent = weight === 0
-    ? `none (all ${bias >= 0 ? "pass" : "fail"})`
-    : `${((1 - bias / weight) * 50).toFixed(1)}%${weight < 0 ? " (pass at/below)" : ""}`;
+  const cutoff = (1 - bias / weight) * 50;
+  elements.cutoff.textContent = Number.isFinite(cutoff) ? `${cutoff.toFixed(1)}%` : "—";
   syncControls(network.slice(1));
 }
 

@@ -15,22 +15,25 @@ function initCanvas(dim) {
   imageData = ctx.getImageData(0, 0, canvasSize, canvasSize);
 }
 
-function draw(network, data, position, blended) {
-  for (let i = 0; i < canvasSize; i++) {
-    for (let j = 0; j < canvasSize; j++) {
-      const coords = toNormalized(i, j, canvasSize);
-      const output = computeOutput(coords, network);
-      const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
-      setPixel(i, j, color);
+function draw(network, data, position, blended, showNetwork = true) {
+  ctx.clearRect(0, 0, canvasSize, canvasSize);
+  if (showNetwork) {
+    for (let i = 0; i < canvasSize; i++) {
+      for (let j = 0; j < canvasSize; j++) {
+        const coords = toNormalized(i, j, canvasSize);
+        const output = computeOutput(coords, network);
+        const color = blended ? blendColor(output) : MUSHROOMS[argmax(output)].predictionColor;
+        setPixel(i, j, color);
+      }
     }
-  }
 
-  ctx.putImageData(imageData, 0, 0);
+    ctx.putImageData(imageData, 0, 0);
+  }
 
   drawAxes();
   drawDot([0, 0]);
 
-  if (!blended) {
+  if (!blended || !showNetwork) {
     data.forEach(({ input, target }) => {
       drawDot(input, MUSHROOMS[target.indexOf(1)].color);
     });
