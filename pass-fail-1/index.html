@@ -26,7 +26,7 @@
       </nav>
     </header>
     <div class="page">
-      <h2 class="page__title">Pass / Fail — 1. Bias</h2>
+      <h2 class="page__title">Phone Battery — 1. Bias</h2>
       <div class="page__loading-text">Loading...</div>
       <main class="page__main">
         <div class="metrics">
@@ -41,12 +41,48 @@
                 <input type="checkbox" id="show-network" checked />
                 <span>show network</span>
               </label>
+              <label>
+                <input type="checkbox" id="show-output" />
+                <span>show output</span>
+              </label>
             </div>
+            <svg viewBox="0 0 500 160" width="500" style="max-width: 100%" font-size="13" text-anchor="middle">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                </marker>
+              </defs>
+
+              <!-- Input -->
+              <text x="45" y="26" fill="dimgray">input</text>
+              <rect x="5" y="35" width="80" height="44" rx="6" fill="white" stroke="black" />
+              <text id="neuron-input" x="45" y="62" font-weight="bold"></text>
+              <text id="neuron-percent" x="45" y="98" fill="dimgray"></text>
+              <line x1="85" y1="57" x2="208" y2="57" stroke="black" marker-end="url(#arrow)" />
+
+              <!-- The neuron adds the input and the bias -->
+              <circle cx="250" cy="57" r="40" fill="white" stroke="black" stroke-width="2" />
+              <text x="250" y="48" fill="dimgray">sum</text>
+              <text id="neuron-sum" x="250" y="70" font-weight="bold"></text>
+
+              <!-- Bias -->
+              <rect x="200" y="120" width="100" height="32" rx="6" fill="white" stroke="dimgray" />
+              <text id="neuron-bias" x="250" y="141"></text>
+              <line x1="250" y1="120" x2="250" y2="99" stroke="dimgray" marker-end="url(#arrow)" />
+
+              <!-- Output -->
+              <line x1="290" y1="57" x2="408" y2="57" stroke="black" marker-end="url(#arrow)" />
+              <text x="452" y="26" fill="dimgray">output</text>
+              <rect x="410" y="35" width="85" height="44" rx="6" fill="white" stroke="black" />
+              <text id="neuron-output" x="452" y="62" font-weight="bold"></text>
+              <text id="neuron-prediction" x="452" y="98" font-weight="bold"></text>
+            </svg>
+            <div id="neuron-equation"></div>
           </div>
           <div class="info-container">
             <section class="prediction-section">
               <h3>Predictions</h3>
-              <div id="score" class="prediction-section__point">score: --</div>
+              <div id="battery" class="prediction-section__point">battery: --</div>
               <div class="prediction">
                 <div id="prediction" class="prediction__mushroom">
                   <div id="prediction-label" class="prediction__label"></div>
@@ -70,7 +106,7 @@
                 <div class="node output">
                   <div class="control">
                     <label for="bias">bias</label>
-                    <input type="range" id="bias" class="control__input" min="-2" max="2" step="any" />
+                    <input type="range" id="bias" class="control__input" min="-1" max="1" step="any" />
                     <span id="bias-value" class="control__value"></span>
                   </div>
                 </div>

@@ -1,2 +1,4 @@
-export * as "set-1" from "./set-1.js";
-export * as "set-2" from "./set-2.js";
+import { data as typical } from "./typical.js";
+import { data as messy } from "./messy.js";
+
+export default { typical, messy };
