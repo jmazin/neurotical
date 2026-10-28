@@ -70,9 +70,8 @@ function updateUI() {
   updateCoords();
 
   const { correct, cost } = calcMetrics(network, data);
-  const percent = ((correct / data.length) * 100).toFixed(2);
-  elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
-  elements.cost.innerText = cost;
+  elements.accuracy.textContent = `${correct} / ${data.length}`;
+  elements.cost.textContent = cost.toFixed(4);
   syncControls(network);
 }
 
@@ -151,6 +150,7 @@ inputs.showNetwork.addEventListener("change", (e) => {
 
 inputs.showHidden.addEventListener("change", (e) => {
   showHidden = e.target.checked;
+  document.body.classList.toggle("show-hidden", showHidden);
   updateUI();
 });
 

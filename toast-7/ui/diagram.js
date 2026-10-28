@@ -37,7 +37,7 @@ function drawDiagram(network, input) {
   // Then the neurons on top. Hidden neurons match their curve colors on the plot.
   network.forEach((layer, l) => {
     layer.forEach((neuron, n) => {
-      const color = l === 1 ? HIDDEN_COLORS[n] : "black";
+      const color = l === 1 ? HIDDEN_COLORS[n] : "#1f1d1a";
       const sum = l > 0 && pass ? pass.sums[l][n] : null;
       const act = pass ? acts[l][n] : null;
       parts.push(drawNeuron(POSITIONS[l][n], neuron.name, sum, act, neuron.bias, color));
@@ -46,23 +46,26 @@ function drawDiagram(network, input) {
 
   const [x, y] = POSITIONS.at(-1)[0];
   if (acts) {
+    // The prediction in text color, with a dot in its class color beside it.
     const { label, color } = TOAST[Number(acts.at(-1)[0] >= 0.5)];
-    parts.push(haloText(x, y + RADIUS + 34, label, color));
+    const labelY = y + RADIUS + 36;
+    parts.push(`<circle cx="${x - 4 * label.length - 10}" cy="${labelY - 4.5}" r="5" fill="${color}" />`);
+    parts.push(haloText(x + 4, labelY, label, "#1f1d1a"));
   }
   caption.textContent = acts ? "" : "Hover over the plot to send a toaster setting through the network.";
 
   svg.innerHTML = parts.join("");
 }
 
-// A line between two neurons: blue for a positive weight, red for negative, thicker when larger.
+// A line between two neurons: solid for a positive weight, dashed for negative, thicker when larger.
 function connection([x1, y1], [x2, y2], weight) {
   const length = Math.hypot(x2 - x1, y2 - y1);
   const [dx, dy] = [((x2 - x1) / length) * RADIUS, ((y2 - y1) / length) * RADIUS];
-  const color = weight >= 0 ? "steelblue" : "crimson";
-  const width = 1 + Math.min(Math.abs(weight), 10) * 0.5;
+  const width = 1 + Math.min(Math.abs(weight), 10) * 0.45;
+  const dash = weight < 0 ? `stroke-dasharray="${width * 2} ${width * 1.5}"` : "";
   return `
-    <line x1="${x1 + dx}" y1="${y1 + dy}" x2="${x2 - dx}" y2="${y2 - dy}" stroke="${color}" stroke-width="${width}" />
-    ${haloText((x1 + x2) / 2, (y1 + y2) / 2 - 8, format(weight), color)}`;
+    <line x1="${x1 + dx}" y1="${y1 + dy}" x2="${x2 - dx}" y2="${y2 - dy}" stroke="#8a8378" stroke-width="${width}" ${dash} />
+    ${haloText((x1 + x2) / 2, (y1 + y2) / 2 - 8, format(weight), "#5c574f")}`;
 }
 
 // A neuron: its name above, its sum (small) and activation (bold) inside, and its bias below.
@@ -70,11 +73,11 @@ function connection([x1, y1], [x2, y2], weight) {
 function drawNeuron([x, y], name, sum, act, bias, stroke) {
   const value = act === null ? "—" : format(act);
   return `
-    <text x="${x}" y="${y - RADIUS - 8}" fill="dimgray">${name}</text>
+    <text x="${x}" y="${y - RADIUS - 8}" fill="#5c574f">${name}</text>
     <circle cx="${x}" cy="${y}" r="${RADIUS}" fill="white" stroke="${stroke}" stroke-width="2.5" />
-    ${sum === null ? "" : `<text x="${x}" y="${y - 6}" fill="dimgray" font-size="10">Σ ${format(sum)}</text>`}
-    <text x="${x}" y="${sum === null ? y + 5 : y + 12}" font-weight="bold">${value}</text>
-    ${bias === undefined ? "" : `<text x="${x}" y="${y + RADIUS + 16}" fill="dimgray" font-size="11">bias ${format(bias)}</text>`}`;
+    ${sum === null ? "" : `<text x="${x}" y="${y - 6}" fill="#5c574f" font-size="10">Σ ${format(sum)}</text>`}
+    <text x="${x}" y="${sum === null ? y + 5 : y + 12}" font-weight="bold" fill="#1f1d1a">${value}</text>
+    ${bias === undefined ? "" : `<text x="${x}" y="${y + RADIUS + 16}" fill="#8a8378" font-size="11">bias ${format(bias)}</text>`}`;
 }
 
 // Text with a white halo, so it stays readable on top of lines.
