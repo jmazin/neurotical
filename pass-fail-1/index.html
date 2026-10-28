@@ -46,21 +46,36 @@
           <div class="info-container">
             <section class="prediction-section">
               <h3>Predictions</h3>
-              <div id="point" class="prediction-section__point">score: --</div>
-              <div id="prediction" class="prediction"></div>
+              <div id="score" class="prediction-section__point">score: --</div>
+              <div class="prediction">
+                <div id="prediction" class="prediction__mushroom">
+                  <div id="prediction-label" class="prediction__label"></div>
+                  <div id="prediction-output" class="prediction__value"></div>
+                </div>
+              </div>
             </section>
             <section class="learning-controls">
               <h3>Learning controls</h3>
               <label>
                 <span>training data:</span>
-                <select id="dataset-selector"></select>
+                <select id="dataset"></select>
               </label>
               <button id="reset" class="reset">reset</button>
             </section>
           </div>
           <section class="network-controls">
             <h3>Network controls</h3>
-            <div id="network-controls" class="network-controls__network"></div>
+            <div class="network-controls__network">
+              <div class="layer">
+                <div class="node output">
+                  <div class="control">
+                    <label for="bias">bias</label>
+                    <input type="range" id="bias" class="control__input" min="-2" max="2" step="any" />
+                    <span id="bias-value" class="control__value"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </section>
         </section>
       </main>

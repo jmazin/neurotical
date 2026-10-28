@@ -1,153 +1,106 @@
-import { initCanvas, draw } from "./ui/canvas.js";
-import { initNetwork, computeOutput, setParam, calcMetrics } from "./network.js";
-
-// Datasets
+import { draw, inputAt } from "./ui/canvas.js";
+import { createNeuron, computeOutput, predict, countCorrect } from "./neuron.js";
+import { RESULTS, toScore } from "./exam.js";
 import * as datasets from "./training-data/index.js";
 
-// UI helpers
-import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
-import { buildControlsUI, syncControls } from "./ui/network-controls.js";
-
-const CANVAS_WIDTH = 500;
-
-// DOM Elements
-const elements = {
-  canvas: document.getElementById("canvas"),
-  point: document.getElementById("point"),
-  accuracy: document.getElementById("accuracy"),
-  cutoff: document.getElementById("cutoff"),
+const $ = (id) => document.getElementById(id);
+const el = {
+  canvas: $("canvas"),
+  accuracy: $("accuracy"),
+  cutoff: $("cutoff"),
+  showNetwork: $("show-network"),
+  score: $("score"),
+  prediction: $("prediction"),
+  predictionLabel: $("prediction-label"),
+  predictionOutput: $("prediction-output"),
+  dataset: $("dataset"),
+  reset: $("reset"),
+  bias: $("bias"),
+  biasValue: $("bias-value"),
 };
 
-// Buttons
-const buttons = {
-  reset: document.getElementById("reset"),
-};
+let neuron = createNeuron();
+let data = datasets["set-1"].data;
 
-// Inputs
-const inputs = {
-  datasetSelector: document.getElementById("dataset-selector"),
-  showNetwork: document.getElementById("show-network"),
-};
+// The input under the pointer, and whether a click has pinned it there.
+let probe = null;
+let pinned = false;
 
-// State variables
-let coords = null;
-let lockPos = false;
-let network;
-let datasetName = "set-1";
-let data;
-let showNetwork = inputs.showNetwork.checked;
-
-// Initialize UI
-populateDatasetSelector();
-resetUI();
-showDemo();
-
-function resetUI() {
-  data = datasets[datasetName].data;
-  network = initNetwork();
-  initCanvas(CANVAS_WIDTH);
-  buildPredictionUI();
-  buildControlsUI(network, onParamChange);
-  inputs.datasetSelector.selectedIndex = Object.keys(datasets).indexOf(datasetName);
-  updateUI();
+for (const name of Object.keys(datasets)) {
+  el.dataset.append(new Option(name, name));
 }
 
-function updateUI() {
-  const position = { lock: lockPos, coords };
-  draw(network, data, position, showNetwork);
-  updateCoords();
+render();
+document.body.classList.remove("is-loading");
 
-  if (coords) {
-    renderPrediction();
-  }
+function render() {
+  draw(neuron, data, { probe: pinned ? probe : null, showNetwork: el.showNetwork.checked });
 
-  const { correct } = calcMetrics(network, data);
-  const percent = ((correct / data.length) * 100).toFixed(2);
-  elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
-  const { bias } = network[0];
-  const cutoff = (1 - bias) * 50;
-  elements.cutoff.textContent = `${cutoff.toFixed(1)}%`;
-  syncControls(network);
-}
+  const correct = countCorrect(neuron, data);
+  el.accuracy.textContent = `${correct}/${data.length} = ${((correct / data.length) * 100).toFixed(2)}%`;
 
-function onParamChange(value, node, param) {
-  setParam(network, node, value, param);
-  updateUI();
-}
+  // The output crosses 0 where input + bias = 0, so at input = −bias.
+  el.cutoff.textContent = `${toScore(-neuron.bias).toFixed(1)}%`;
 
-// Canvas Event Listeners
-elements.canvas.addEventListener("mousemove", (e) => {
-  if (lockPos) return;
-  setCoords(e);
-  updateCoords();
-});
+  el.bias.value = neuron.bias;
+  el.biasValue.textContent = neuron.bias.toFixed(5);
 
-elements.canvas.addEventListener("mouseout", () => {
-  if (lockPos) return;
-  coords = null;
-  updateCoords();
-  document.querySelectorAll(".prediction__value").forEach((div) => {
-    div.textContent = "";
-  });
-});
-
-elements.canvas.addEventListener("click", (e) => {
-  lockPos = true;
-  setCoords(e);
-  updateUI();
-});
-
-elements.canvas.addEventListener("dblclick", () => {
-  lockPos = false;
-  coords = null;
-  updateUI();
-});
-
-// Event Listeners
-inputs.datasetSelector.addEventListener("change", (e) => {
-  datasetName = e.target.value;
-  resetUI();
-});
-
-buttons.reset.addEventListener("click", () => {
-  network = initNetwork();
-  updateUI();
-});
-
-inputs.showNetwork.addEventListener("change", (e) => {
-  showNetwork = e.target.checked;
-  updateUI();
-});
-
-function setCoords(e) {
-  // Match the plot's 4% padding, and ignore the vertical pointer position.
-  const x = (e.offsetX / elements.canvas.clientWidth - 0.04) / 0.92;
-  coords = [Math.max(-1, Math.min(1, x * 2 - 1))];
-}
-
-function updateCoords() {
-  if (coords) {
-    renderPrediction();
-  } else {
-    elements.point.textContent = "score: --";
-  }
+  renderPrediction();
 }
 
 function renderPrediction() {
-  const output = computeOutput(coords, network);
-  elements.point.textContent = `score: ${((coords[0] + 1) * 50).toFixed(1)}%`;
-  updatePredictionUI(output);
+  if (probe === null) {
+    el.score.textContent = "score: --";
+    el.predictionLabel.textContent = el.predictionOutput.textContent = "";
+    return;
+  }
+  const output = computeOutput(neuron, probe);
+  const { label, color } = RESULTS[predict(output)];
+  el.score.textContent = `score: ${toScore(probe).toFixed(1)}%`;
+  el.prediction.style.color = color;
+  el.predictionLabel.textContent = label;
+  el.predictionOutput.textContent = `sum: ${output.toFixed(3)}`;
 }
 
-// Create <option> elements for datasets
-function populateDatasetSelector() {
-  Object.keys(datasets).forEach((file) => {
-    const option = document.createElement("option");
-    option.value = option.textContent = file;
-    inputs.datasetSelector.append(option);
-  });
-}
+// Hovering previews a score; clicking pins it on the plot; double-clicking unpins it.
+el.canvas.addEventListener("mousemove", (e) => {
+  if (pinned) return;
+  probe = inputAt(e);
+  renderPrediction();
+});
 
-function showDemo() {
-  document.body.classList.remove("is-loading");
-}
+el.canvas.addEventListener("mouseout", () => {
+  if (pinned) return;
+  probe = null;
+  renderPrediction();
+});
+
+el.canvas.addEventListener("click", (e) => {
+  pinned = true;
+  probe = inputAt(e);
+  render();
+});
+
+el.canvas.addEventListener("dblclick", () => {
+  pinned = false;
+  probe = null;
+  render();
+});
+
+el.bias.addEventListener("input", (e) => {
+  neuron.bias = +e.target.value;
+  render();
+});
+
+el.dataset.addEventListener("change", (e) => {
+  data = datasets[e.target.value].data;
+  neuron = createNeuron();
+  render();
+});
+
+el.reset.addEventListener("click", () => {
+  neuron = createNeuron();
+  render();
+});
+
+el.showNetwork.addEventListener("change", render);
