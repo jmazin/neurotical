@@ -261,7 +261,9 @@
 .readouts {
   display: flex;
   gap: 1.25rem;
-  margin: 0 0.25rem 0 auto;
+  margin: 0 auto 0 0.25rem;
+  /* Readouts on the left, controls on the right. */
+  order: -1;
 }
 
 .readout {

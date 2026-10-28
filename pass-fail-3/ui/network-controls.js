@@ -1,5 +1,3 @@
-import { EXAM_RESULTS } from "../exam-results.js";
-
 const networkContainer = document.getElementById("network-controls");
 
 function buildControlsUI(network, onParamChange) {
@@ -11,7 +9,6 @@ function buildControlsUI(network, onParamChange) {
   network.forEach((_, index) => {
     const nodeContainer = createContainer("node");
     nodeContainer.classList.add("output");
-    nodeContainer.style.borderColor = EXAM_RESULTS[0].color;
     layerContainer.append(nodeContainer);
 
     const biasControl = createRangeControl(index, "bias");

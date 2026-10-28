@@ -58,7 +58,7 @@ export function draw(neuron, data, { probe = null, showNetwork = true, showOutpu
   // Without the output, each example and the probe sit on the battery axis.
   if (!showOutput) {
     data.forEach(({ input, target }) => drawDot(toX(input), axisY, RESULTS[target].color));
-    if (probe !== null) drawDot(toX(probe), axisY, "purple");
+    if (probe !== null) drawDot(toX(probe), axisY, "#1f1d1a");
     return;
   }
 
@@ -79,7 +79,7 @@ export function draw(neuron, data, { probe = null, showNetwork = true, showOutpu
     drawDot(toX(input), toY(computeOutput(neuron, input)), color);
   });
 
-  if (probe !== null) drawDot(toX(probe), toY(computeOutput(neuron, probe)), "purple");
+  if (probe !== null) drawDot(toX(probe), toY(computeOutput(neuron, probe)), "#1f1d1a");
   ctx.restore();
 }
 
@@ -92,9 +92,10 @@ function drawPredictions(neuron) {
   }
 }
 
+// Axes and gridlines stay quiet so the data stands out.
 function drawBatteryAxis() {
-  ctx.strokeStyle = "black";
-  ctx.fillStyle = "black";
+  ctx.strokeStyle = "#8a8378";
+  ctx.fillStyle = "#5c574f";
   ctx.font = `${WIDTH / 40}px Inter, sans-serif`;
   ctx.lineWidth = WIDTH / 500;
   drawLine(LEFT, axisY, RIGHT, axisY);
@@ -110,6 +111,7 @@ function drawBatteryAxis() {
 function drawOutputGrid() {
   ctx.textAlign = "left";
   ctx.lineWidth = WIDTH / 1000;
+  ctx.strokeStyle = "#cfc8bc";
   Y_LABELS.forEach((output) => {
     ctx.setLineDash(output === THRESHOLD ? [6, 4] : []);
     drawLine(LEFT, toY(output), RIGHT, toY(output));
@@ -120,7 +122,7 @@ function drawOutputGrid() {
 
 // The neuron's output across every battery level.
 function drawOutput(neuron) {
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "#1f1d1a";
   ctx.lineWidth = WIDTH / 200;
   ctx.beginPath();
   for (let x = LEFT; x <= RIGHT; x++) {
@@ -136,9 +138,13 @@ function drawLine(x1, y1, x2, y2) {
   ctx.stroke();
 }
 
+// A dot with a white ring, so overlapping dots stay distinct.
 function drawDot(x, y, color) {
   ctx.beginPath();
   ctx.fillStyle = color;
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
   ctx.arc(x, y, DOT_RADIUS, 0, 2 * Math.PI);
   ctx.fill();
+  ctx.stroke();
 }

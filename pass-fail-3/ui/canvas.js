@@ -66,7 +66,7 @@ function draw(network, data, position, showNetwork = true) {
     drawDot(input[0], computeOutput(input, network), color);
   });
 
-  if (position.lock) drawDot(position.coords[0], computeOutput(position.coords, network), "purple");
+  if (position.lock) drawDot(position.coords[0], computeOutput(position.coords, network), "#1f1d1a");
   ctx.restore();
 }
 
@@ -78,9 +78,10 @@ function setPixel(i, j, [r, g, b, a = 150]) {
   imageData.data[index + 3] = a;
 }
 
+// Axes and gridlines stay quiet so the data stands out.
 function drawAxes() {
-  ctx.strokeStyle = "black";
-  ctx.fillStyle = "black";
+  ctx.strokeStyle = "#8a8378";
+  ctx.fillStyle = "#5c574f";
   ctx.lineWidth = canvasSize / 500;
   ctx.font = `${canvasSize / 40}px Inter, sans-serif`;
 
@@ -102,6 +103,7 @@ function drawAxes() {
   // Output gridlines, with the decision threshold dashed.
   ctx.textAlign = "left";
   ctx.lineWidth = canvasSize / 1000;
+  ctx.strokeStyle = "#cfc8bc";
   Y_LABELS.forEach((output) => {
     ctx.setLineDash(output === THRESHOLD ? [6, 4] : []);
     ctx.beginPath();
@@ -115,7 +117,7 @@ function drawAxes() {
 
 // The output across every score.
 function drawCurve(network) {
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = "#1f1d1a";
   ctx.lineWidth = canvasSize / 200;
   ctx.beginPath();
   for (let i = padding; i <= canvasSize - padding; i++) {
@@ -143,11 +145,15 @@ function drawErrors(network, data) {
   ctx.setLineDash([]);
 }
 
-function drawDot(input, output, color = "black") {
+// A dot with a white ring, so overlapping dots stay distinct.
+function drawDot(input, output, color = "#1f1d1a") {
   ctx.beginPath();
   ctx.fillStyle = color;
-  ctx.arc(toX(input), toY(output), canvasSize / 100, 0, 2 * Math.PI);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 2;
+  ctx.arc(toX(input), toY(output), canvasSize / 90, 0, 2 * Math.PI);
   ctx.fill();
+  ctx.stroke();
 }
 
 export { initCanvas, draw };

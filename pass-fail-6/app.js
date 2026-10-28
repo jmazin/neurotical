@@ -7,6 +7,7 @@ import * as datasets from "./training-data/index.js";
 // UI helpers
 import { buildPredictionUI, updatePredictionUI } from "./ui/prediction.js";
 import { buildControlsUI, syncControls } from "./ui/network-controls.js";
+import { drawNeuron } from "./ui/diagram.js";
 
 const CANVAS_WIDTH = 500;
 
@@ -74,7 +75,7 @@ function updateUI() {
   const { correct, cost } = calcMetrics(network, data);
   const percent = ((correct / data.length) * 100).toFixed(2);
   elements.accuracy.innerText = `${correct}/${data.length} = ${percent}%`;
-  elements.cost.innerText = cost;
+  elements.cost.innerText = cost.toFixed(4);
   const { weight, bias } = network[0];
   const cutoff = (1 - bias / weight) * 50;
   elements.cutoff.textContent = Number.isFinite(cutoff) ? `${cutoff.toFixed(1)}%` : "—";
@@ -164,6 +165,7 @@ function setCoords(e) {
 }
 
 function updateCoords() {
+  drawNeuron(network, coords);
   if (coords) {
     renderPrediction();
   } else {

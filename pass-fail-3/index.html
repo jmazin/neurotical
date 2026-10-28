@@ -3,18 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neurotical</title>
+    <title>Learn · Neurotical</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="./lesson.css" />
     <link rel="icon" type="image/png" href="../images/circles.png" />
     <script src="./app.js" type="module"></script>
   </head>
-  <body class="is-loading">
+  <body class="is-loading lesson-page">
     <header class="header">
       <div class="header__title">
         <h1 class="header__heading">Neurotical</h1>
@@ -27,49 +28,121 @@
       </nav>
     </header>
     <div class="page">
-      <h2 class="page__title">Pass / Fail — 3. Learn</h2>
       <div class="page__loading-text">Loading...</div>
-      <main class="page__main">
-        <div class="metrics">
-          <div id="accuracy"></div>
-          <div class="metrics__cost">cost: <span id="cost"></span></div>
-          <div>cutoff: <span id="cutoff"></span></div>
-        </div>
-        <section class="page__container">
-          <div class="canvas-container">
-            <canvas id="canvas" class="canvas-container__canvas"></canvas>
-            <div class="canvas-container__controls">
-              <label>
-                <input type="checkbox" id="show-network" checked />
-                <span>show network</span>
-              </label>
-            </div>
-          </div>
-          <div class="info-container">
-            <section class="prediction-section">
-              <h3>Predictions</h3>
-              <div id="point" class="prediction-section__point">score: --</div>
-              <div id="prediction" class="prediction"></div>
-            </section>
-            <section class="learning-controls">
-              <h3>Learning controls</h3>
-              <div class="button-group">
-                <button id="learn" class="learn">learn</button>
-                <button id="step" class="step">step</button>
+      <main class="page__main lesson">
+        <article class="essay">
+          <header class="essay__header">
+            <p class="essay__eyebrow">Pass / Fail · Stage 3</p>
+            <h2 class="essay__title">Learn</h2>
+          </header>
+
+          <p>
+            Press <span class="ui-ref ui-ref--primary">learn</span> and the network nudges the bias a little at a
+            time to lower the cost.
+          </p>
+
+          <figure class="lab">
+            <div class="lab__bar">
+              <div class="buttons">
+                <button id="learn" class="button button--primary">learn</button>
+                <button id="step" class="button">step</button>
+                <button id="reset" class="button">reset</button>
               </div>
-              <label>
-                <span>training data:</span>
+              <label class="field">
+                <span class="field__label">data</span>
                 <select id="dataset-selector"></select>
               </label>
-              <label>learn rate:<input type="number" id="learn-rate" min="0" step="0.1" /> </label>
-              <button id="reset" class="reset">reset</button>
-            </section>
-          </div>
-          <section class="network-controls">
-            <h3>Network controls</h3>
-            <div id="network-controls" class="network-controls__network"></div>
-          </section>
-        </section>
+              <label class="field">
+                <span class="field__label">learn rate</span>
+                <input type="number" id="learn-rate" min="0" step="0.1" />
+              </label>
+              <dl class="readouts">
+                <div class="readout">
+                  <dt>correct</dt>
+                  <dd id="accuracy"></dd>
+                </div>
+                <div class="readout">
+                  <dt>cost</dt>
+                  <dd id="cost"></dd>
+                </div>
+                <div class="readout">
+                  <dt>cutoff</dt>
+                  <dd id="cutoff"></dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="lab__views">
+              <div class="lab__column">
+                <div class="tile">
+                  <h3 class="tile__title">What the network predicts</h3>
+                  <canvas id="canvas" class="plot"></canvas>
+                  <div class="legend">
+                    <span class="legend__item"><span class="swatch" style="--color: var(--pass)"></span>pass</span>
+                    <span class="legend__item"><span class="swatch" style="--color: var(--fail)"></span>fail</span>
+                  </div>
+                  <div class="toggles">
+                    <label><input type="checkbox" id="show-network" checked />show network</label>
+                  </div>
+                </div>
+                <div class="tile">
+                  <h3 class="tile__title">Inside the neuron</h3>
+                  <svg class="neuron" viewBox="0 0 500 160" font-size="13" text-anchor="middle">
+                    <defs>
+                      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" />
+                      </marker>
+                    </defs>
+
+                    <!-- Input -->
+                    <text x="45" y="26" fill="dimgray">input</text>
+                    <rect x="5" y="35" width="80" height="44" rx="6" fill="white" stroke="black" />
+                    <text id="neuron-input" x="45" y="62" font-weight="bold"></text>
+                    <text id="neuron-score" x="45" y="98" fill="dimgray"></text>
+                    <line x1="85" y1="57" x2="208" y2="57" stroke="black" marker-end="url(#arrow)" />
+
+                    <!-- The neuron adds the input and the bias -->
+                    <circle cx="250" cy="57" r="40" fill="white" stroke="black" stroke-width="2" />
+                    <text x="250" y="48" fill="dimgray">sum</text>
+                    <text id="neuron-sum" x="250" y="70" font-weight="bold"></text>
+
+                    <!-- Bias -->
+                    <rect x="200" y="120" width="100" height="32" rx="6" fill="white" stroke="dimgray" />
+                    <text id="neuron-bias" x="250" y="141"></text>
+                    <line x1="250" y1="120" x2="250" y2="99" stroke="dimgray" marker-end="url(#arrow)" />
+
+                    <!-- Output -->
+                    <line x1="290" y1="57" x2="408" y2="57" stroke="black" marker-end="url(#arrow)" />
+                    <text x="452" y="26" fill="dimgray">output</text>
+                    <rect x="410" y="35" width="85" height="44" rx="6" fill="white" stroke="black" />
+                    <text id="neuron-output" x="452" y="62" font-weight="bold"></text>
+                    <text id="neuron-prediction" x="452" y="98" font-weight="bold"></text>
+                  </svg>
+                  <div id="neuron-equation" class="equation"></div>
+                </div>
+              </div>
+
+              <div class="lab__column">
+                <div class="tile">
+                  <h3 class="tile__title">Prediction</h3>
+                  <div id="point" class="prediction__point">score: --</div>
+                  <div id="prediction" class="prediction"></div>
+                  <p class="tile__hint">Hover over the plot to try a score. Click to pin it, and double-click to let it go.</p>
+                </div>
+
+                <div class="tile">
+                  <h3 class="tile__title">Bias</h3>
+                  <div id="network-controls" class="network-controls__network"></div>
+                </div>
+              </div>
+            </div>
+
+            <figcaption class="caption">
+              Each example sits on the threshold, and its output sits on the line above or below it. The dotted
+              line is its loss: how far the output is past the threshold on the wrong side.
+            </figcaption>
+          </figure>
+        </article>
       </main>
     </div>
   </body>
